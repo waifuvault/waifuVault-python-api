@@ -5,11 +5,11 @@ from io import BytesIO
 import requests
 from requests_toolbelt import MultipartEncoder
 
-import waifumodels
+from .waifumodels import FileResponse, FileUpload
 
 
 # Upload File
-def upload_file(file_obj: waifumodels.FileUpload):
+def upload_file(file_obj: FileUpload):
     parameters = {}
     if file_obj.password:
         parameters['password'] = file_obj.password
@@ -35,31 +35,31 @@ def upload_file(file_obj: waifumodels.FileUpload):
             params=parameters,
             data=multipart_data,
             headers={'Content-Type': multipart_data.content_type})
-    return json.loads(response.text)
+    check_error(response, False)
+    return dict_to_obj(json.loads(response.text))
 
 
 # Get File Info
 def file_info(token: str, formatted: bool):
+    url = f"https://waifuvault.moe/rest/{token}"
     response = requests.get(
-        "https://waifuvault.moe/rest",
-        params={'token': token, 'formatted': 'true' if formatted else 'false'}
+        url,
+        params={'formatted': 'true' if formatted else 'false'}
     )
-    check_error(response)
-    return json.loads(response.text)
+    check_error(response, False)
+    return dict_to_obj(json.loads(response.text))
 
 
 # Delete File
 def delete_file(token: str):
-    response = requests.delete(
-        "https://waifuvault.moe/rest",
-        params={'token': token}
-    )
-    check_error(response)
-    return json.loads(response.text)
+    url = f"https://waifuvault.moe/rest/{token}"
+    response = requests.delete(url)
+    check_error(response, False)
+    return True if response.text == "true" else False
 
 
 # Get File
-def get_file(file_obj: waifumodels.FileResponse, password: str = None):
+def get_file(file_obj: FileResponse, password: str = None):
     headers = {}
     if password:
         headers["x-password"] = password
@@ -68,13 +68,29 @@ def get_file(file_obj: waifumodels.FileResponse, password: str = None):
     else:
         url = file_obj.url
     response = requests.get(url, headers=headers)
-    check_error(response)
+    check_error(response, True)
     return BytesIO(response.content)
 
 
 # Check Error
-def check_error(response: requests.models.Response):
+def check_error(response: requests.models.Response, is_download: bool):
     if not response.ok:
-        err = json.loads(response.text)
-        raise Exception(f"Error {err.status} ({err.name}): {err.message}")
+        try:
+            err = json.loads(response.text)
+            status = err["status"]
+            name = err["name"]
+            message = err['message']
+        except:
+            status = "Password is Incorrect" if response.status_code == 403 and is_download else response.text
+            name = ""
+            message = ""
+        raise Exception(f"Error {status} ({name}): {message}")
     return
+
+
+def dict_to_obj(dict_obj: any):
+    return FileResponse(
+        dict_obj["token"],
+        dict_obj["url"],
+        True if dict_obj["protected"] == "true" else False,
+        dict_obj["retentionPeriod"])
