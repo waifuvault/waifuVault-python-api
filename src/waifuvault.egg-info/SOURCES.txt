@@ -1,0 +1,11 @@
+LICENSE
+README.md
+pyproject.toml
+src/waifuvault/__init__.py
+src/waifuvault/waifumodels.py
+src/waifuvault/waifuvault.py
+src/waifuvault.egg-info/PKG-INFO
+src/waifuvault.egg-info/SOURCES.txt
+src/waifuvault.egg-info/dependency_links.txt
+src/waifuvault.egg-info/requires.txt
+src/waifuvault.egg-info/top_level.txt
