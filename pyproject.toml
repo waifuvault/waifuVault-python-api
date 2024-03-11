@@ -8,9 +8,14 @@ version = "1.0.0"
 authors = [
     { name="Walker Aldridge", email="walker@waifuvault.moe" },
 ]
-description = "A small example package"
+description = "waifuVault Python API module"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
+dependencies = [
+    "requests",
+    "requests_toolbelt",
+    "json"
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
