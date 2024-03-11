@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "waifuVault-python-api"
+version = "1.0.0"
+authors = [
+    { name="Walker Aldridge", email="walker@waifuvault.moe" },
+]
+description = "A small example package"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/waifuvault/waifuVault-python-api"
+Issues = "https://github.com/waifuvault/waifuVault-python-api/issues"
