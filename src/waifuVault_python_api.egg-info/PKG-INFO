@@ -1,0 +1,18 @@
+Metadata-Version: 2.1
+Name: waifuVault-python-api
+Version: 1.0.0
+Summary: waifuVault Python API module
+Author-email: Walker Aldridge <walker@waifuvault.moe>
+Project-URL: Homepage, https://github.com/waifuvault/waifuVault-python-api
+Project-URL: Issues, https://github.com/waifuvault/waifuVault-python-api/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests
+Requires-Dist: requests_toolbelt
+
+# waifuVault-python-api
+Official Python API for waifuVault

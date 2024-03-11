@@ -13,8 +13,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "requests",
-    "requests_toolbelt",
-    "json"
+    "requests_toolbelt"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
