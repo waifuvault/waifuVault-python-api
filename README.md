@@ -13,10 +13,10 @@ pip install waifuvault
 
 This API contains 4 interactions:
 
-1. Upload
-2. Delete
-3. Get file info
-4. Get file
+1. Upload File
+2. Get file Info
+3. Delete File
+4. Get File
 
 The package is namespaced to `waifuvault`, so to import it, simply:
 
@@ -68,7 +68,7 @@ upload_res = waifuvault.upload_file(upload_file)
 print(f"{upload_res.url}")
 ```
 
-### File Info
+### Get File Info
 
 If you have a token from your upload. Then you can get file info. This results in the following info:
 
