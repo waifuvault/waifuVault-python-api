@@ -18,7 +18,18 @@ def upload_file(file_obj: FileUpload):
     if file_obj.hidefilename:
         parameters['hide_filename'] = file_obj.hidefilename
 
-    if file_obj.is_url():
+    if file_obj.is_buffer():
+        multipart_data = MultipartEncoder(
+            fields={
+                'file': (file_obj.target_name, file_obj.target)
+            }
+        )
+        response = requests.put(
+            "https://waifuvault.moe/rest",
+            params=parameters,
+            data=multipart_data,
+            headers={'Content-Type': multipart_data.content_type})
+    elif file_obj.is_url():
         response = requests.put(
             "https://waifuvault.moe/rest",
             params=parameters,
