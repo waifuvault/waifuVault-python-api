@@ -128,7 +128,6 @@ Use the `get_file` function. This function takes the following options an object
 | `token`    | `string` | The token of the file you want to download | true only if `filename` is not set | if `filename` is set, then this can not be used |
 | `url`      | `string` | The URL of the file                        | true only if `token` is not set    | if `token` is set, then this can not be used    |
 | `password` | `string` | The password for the file                  | true if file is encrypted          | Passed as a parameter on the function call      |
-Password is provided as a parameter on the call.
 
 > **Important!** The Unique identifier filename is the epoch/filename only if the file uploaded did not have a hidden
 > filename, if it did, then it's just the epoch.
