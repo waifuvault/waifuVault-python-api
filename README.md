@@ -24,7 +24,7 @@ The package is namespaced to `waifuvault`, so to import it, simply:
 import waifuvault
 ```
 
-### Upload File
+### Upload File<a id="upload-file"></a>
 
 To Upload a file, use the `upload_file` function. This function takes the following options as an object:
 
@@ -68,7 +68,7 @@ upload_res = waifuvault.upload_file(upload_file)
 print(f"{upload_res.url}")
 ```
 
-### Get File Info
+### Get File Info<a id="get-file-info"></a>
 
 If you have a token from your upload. Then you can get file info. This results in the following info:
 
@@ -100,7 +100,7 @@ print(upload_info.retentionPeriod)
 print(upload_info.url)
 ```
 
-### Delete File
+### Delete File<a id="delete-file"></a>
 
 To delete a file, you must supply your token to the `delete_file` function.
 
@@ -116,7 +116,7 @@ del_file = waifuvault.delete_file(your_token)
 print(del_file)
 ```
 
-### Get File
+### Get File<a id="get-file"></a>
 
 This lib also supports obtaining a file from the API as a Buffer by supplying either the token or the unique identifier
 of the file (epoch/filename).
