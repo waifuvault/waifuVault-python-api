@@ -13,10 +13,10 @@ pip install waifuvault
 
 This API contains 4 interactions:
 
-1. Upload File
-2. Get file Info
-3. Delete File
-4. Get File
+1. [Upload File](#upload-file)
+2. [Get file Info](#get-file-info)
+3. [Delete File](#delete-file)
+4. [Get File](#get-file)
 
 The package is namespaced to `waifuvault`, so to import it, simply:
 
