@@ -1,0 +1,34 @@
+# More information on this workflow: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Deploy to PyPI
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: prep action
+        uses: actions/checkout@v4
+
+      - name: setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Build a binary wheel
+        run: |
+          pip install --upgrade build
+          python -m build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1.8.14
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
