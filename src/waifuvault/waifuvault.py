@@ -1,3 +1,5 @@
+__base_url__ = "https://waifuvault.moe/rest"
+
 import json
 import os
 from io import BytesIO
@@ -25,13 +27,13 @@ def upload_file(file_obj: FileUpload):
             }
         )
         response = requests.put(
-            "https://waifuvault.moe/rest",
+            __base_url__,
             params=parameters,
             data=multipart_data,
             headers={'Content-Type': multipart_data.content_type})
     elif file_obj.is_url():
         response = requests.put(
-            "https://waifuvault.moe/rest",
+            __base_url__,
             params=parameters,
             data={'url': file_obj.target}
         )
@@ -42,7 +44,7 @@ def upload_file(file_obj: FileUpload):
             }
         )
         response = requests.put(
-            "https://waifuvault.moe/rest",
+            __base_url__,
             params=parameters,
             data=multipart_data,
             headers={'Content-Type': multipart_data.content_type})
@@ -52,7 +54,7 @@ def upload_file(file_obj: FileUpload):
 
 # Get File Info
 def file_info(token: str, formatted: bool):
-    url = f"https://waifuvault.moe/rest/{token}"
+    url = f"{__base_url__}/{token}"
     response = requests.get(
         url,
         params={'formatted': 'true' if formatted else 'false'}
@@ -63,7 +65,7 @@ def file_info(token: str, formatted: bool):
 
 # Delete File
 def delete_file(token: str):
-    url = f"https://waifuvault.moe/rest/{token}"
+    url = f"{__base_url__}/{token}"
     response = requests.delete(url)
     check_error(response, False)
     return True if response.text == "true" else False

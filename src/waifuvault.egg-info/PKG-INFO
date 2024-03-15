@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: waifuvault
-Version: 1.1.2
+Version: 1.1.3
 Summary: waifuVault Python API module
 Author-email: Walker Aldridge <walker@waifuvault.moe>
 Project-URL: Homepage, https://github.com/waifuvault/waifuVault-python-api
@@ -29,10 +29,10 @@ pip install waifuvault
 
 This API contains 4 interactions:
 
-1. Upload
-2. Delete
-3. Get file info
-4. Get file
+1. [Upload File](#upload-file)
+2. [Get file Info](#get-file-info)
+3. [Delete File](#delete-file)
+4. [Get File](#get-file)
 
 The package is namespaced to `waifuvault`, so to import it, simply:
 
@@ -40,7 +40,7 @@ The package is namespaced to `waifuvault`, so to import it, simply:
 import waifuvault
 ```
 
-### Upload File
+### Upload File<a id="upload-file"></a>
 
 To Upload a file, use the `upload_file` function. This function takes the following options as an object:
 
@@ -84,7 +84,7 @@ upload_res = waifuvault.upload_file(upload_file)
 print(f"{upload_res.url}")
 ```
 
-### File Info
+### Get File Info<a id="get-file-info"></a>
 
 If you have a token from your upload. Then you can get file info. This results in the following info:
 
@@ -116,7 +116,7 @@ print(upload_info.retentionPeriod)
 print(upload_info.url)
 ```
 
-### Delete File
+### Delete File<a id="delete-file"></a>
 
 To delete a file, you must supply your token to the `delete_file` function.
 
@@ -132,7 +132,7 @@ del_file = waifuvault.delete_file(your_token)
 print(del_file)
 ```
 
-### Get File
+### Get File<a id="get-file"></a>
 
 This lib also supports obtaining a file from the API as a Buffer by supplying either the token or the unique identifier
 of the file (epoch/filename).
@@ -144,7 +144,6 @@ Use the `get_file` function. This function takes the following options an object
 | `token`    | `string` | The token of the file you want to download | true only if `filename` is not set | if `filename` is set, then this can not be used |
 | `url`      | `string` | The URL of the file                        | true only if `token` is not set    | if `token` is set, then this can not be used    |
 | `password` | `string` | The password for the file                  | true if file is encrypted          | Passed as a parameter on the function call      |
-Password is provided as a parameter on the call.
 
 > **Important!** The Unique identifier filename is the epoch/filename only if the file uploaded did not have a hidden
 > filename, if it did, then it's just the epoch.
