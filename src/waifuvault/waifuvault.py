@@ -24,9 +24,7 @@ def upload_file(file_obj: FileUpload):
         header_data = None
     else:
         multipart_data = MultipartEncoder(
-            fields={
-                'file': (os.path.basename(file_obj.target), open(file_obj.target, 'rb'))
-            }
+            fields={'file': (os.path.basename(file_obj.target), open(file_obj.target, 'rb'))}
         )
         header_data = {'Content-Type': multipart_data.content_type}
 
@@ -83,7 +81,7 @@ def __check_error(response: requests.models.Response, is_download: bool):
         except:
             status = response.status_code
             name = "Password is Incorrect" if response.status_code == 403 and is_download else response.status_code
-            message = response.text
+            message = "Password is Incorrect" if response.status_code == 403 and is_download else response.text
         raise Exception(f"Error {status} ({name}): {message}")
     return
 
