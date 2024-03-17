@@ -12,8 +12,6 @@ from .waifumodels import FileResponse, FileUpload
 
 # Upload File
 def upload_file(file_obj: FileUpload):
-    parameters = __build_parameters(file_obj)
-
     if file_obj.is_buffer():
         multipart_data = MultipartEncoder(
             fields={'file': (file_obj.target_name, file_obj.target)}
@@ -30,7 +28,7 @@ def upload_file(file_obj: FileUpload):
 
     response = requests.put(
         __base_url__,
-        params=parameters,
+        params=file_obj.build_parameters(),
         data=multipart_data,
         headers=header_data)
     __check_error(response, False)
@@ -84,17 +82,6 @@ def __check_error(response: requests.models.Response, is_download: bool):
             message = "Password is Incorrect" if response.status_code == 403 and is_download else response.text
         raise Exception(f"Error {status} ({name}): {message}")
     return
-
-
-def __build_parameters(file_obj: FileUpload):
-    parameters = {}
-    if file_obj.password:
-        parameters['password'] = file_obj.password
-    if file_obj.expires:
-        parameters['expires'] = file_obj.expires
-    if file_obj.hidefilename:
-        parameters['hide_filename'] = file_obj.hidefilename
-    return parameters
 
 
 def __dict_to_obj(dict_obj: any):

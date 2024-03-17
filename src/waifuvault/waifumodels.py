@@ -1,6 +1,7 @@
 # Models for waifuVault
 import io
 
+
 class FileUpload:
     def __init__(self, target: any, target_name: str = "unknown", expires: str = None, password: str = None, hidefilename: bool = False):
         self.target = target
@@ -16,6 +17,16 @@ class FileUpload:
 
     def is_buffer(self):
         return isinstance(self.target, io.BytesIO)
+
+    def build_parameters(self):
+        parameters = {}
+        if self.password:
+            parameters['password'] = self.password
+        if self.expires:
+            parameters['expires'] = self.expires
+        if self.hidefilename:
+            parameters['hide_filename'] = self.hidefilename
+        return parameters
 
 
 class FileResponse:
