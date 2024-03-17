@@ -110,6 +110,8 @@ This function takes the following options as parameters:
 |---------|----------|------------------------------------------|----------|------------|
 | `token` | `string` | The token of the file you wish to delete | true     |            |
 
+> **NOTE:** `delete_file` will only ever either return `true` or throw an exception if the token is invalid
+
 ```python
 import waifuvault
 del_file = waifuvault.delete_file(your_token)
