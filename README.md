@@ -103,22 +103,18 @@ print(upload_info.url)
 
 ### Update File Info<a id="update-file-info"></a>
 
-If you have a token from your upload. Then you can get file info. This results in the following info:
-
-* token
-* url
-* protected
-* retentionPeriod
+If you have a token from your upload, then you can update the information for the file.  You can change the password or remove it, 
+you can set custom expiry time or remove it, and finally you can choose whether the filename is hidden.
 
 Use the `file_update` function. This function takes the following options as parameters:
 
-| Option              | Type     | Description                                             | Required | Extra info |
-|---------------------|----------|---------------------------------------------------------|----------|------------|
-| `token`             | `string` | The token of the upload                                 | true     |            |
-| `password`          | `string` | The current password of the file                        | false    |            |
-| `previous_password` | `string` | The previous password of the file, if changing password | false    |            |
-| `custom_expiry`     | `string` | Custom expiry in the same form as upload command        | false    |            |
-| `hide_filename`     | `bool`   | Sets whether the filename is visible in the URL or not  | false    |            |
+| Option              | Type     | Description                                             | Required | Extra info                                  |
+|---------------------|----------|---------------------------------------------------------|----------|---------------------------------------------|
+| `token`             | `string` | The token of the upload                                 | true     |                                             |
+| `password`          | `string` | The current password of the file                        | false    | Set to empty string to remove password      |
+| `previous_password` | `string` | The previous password of the file, if changing password | false    |                                             |
+| `custom_expiry`     | `string` | Custom expiry in the same form as upload command        | false    | Set to empty string to remove custom expiry |
+| `hide_filename`     | `bool`   | Sets whether the filename is visible in the URL or not  | false    |                                             |
 
 ```python
 import waifuvault

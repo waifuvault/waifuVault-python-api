@@ -38,13 +38,17 @@ def upload_file(file_obj: FileUpload):
 # Update File
 def file_update(token: str, password: str = None, previous_password: str = None, custom_expiry: str = None, hide_filename:bool = False):
     url = f"{__base_url__}/{token}"
+    fields = {'hideFilename': "true" if hide_filename else "false"}
+    if password is not None:
+        fields['password'] = password
+    if previous_password is not None:
+        fields['previousPassword'] = previous_password
+    if custom_expiry is not None:
+        fields['customExpiry'] = custom_expiry
+
     response = requests.patch(
         url,
-        data={'password': password,
-              'previousPassword': previous_password,
-              'customExpiry': custom_expiry,
-              'hideFilename': "true" if hide_filename else "false"
-              }
+        data=fields
     )
     __check_error(response, False)
     return __dict_to_obj(json.loads(response.text))
