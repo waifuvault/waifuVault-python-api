@@ -11,12 +11,13 @@ pip install waifuvault
 
 ## Usage
 
-This API contains 4 interactions:
+This API contains 5 interactions:
 
 1. [Upload File](#upload-file)
 2. [Get file Info](#get-file-info)
-3. [Delete File](#delete-file)
-4. [Get File](#get-file)
+3. [Update file Info](#update-file-info)
+4. [Delete File](#delete-file)
+5. [Get File](#get-file)
 
 The package is namespaced to `waifuvault`, so to import it, simply:
 
@@ -98,6 +99,31 @@ import waifuvault
 upload_info = waifuvault.file_info(your_token,True)
 print(upload_info.retentionPeriod)
 print(upload_info.url)
+```
+
+### Update File Info<a id="update-file-info"></a>
+
+If you have a token from your upload. Then you can get file info. This results in the following info:
+
+* token
+* url
+* protected
+* retentionPeriod
+
+Use the `file_update` function. This function takes the following options as parameters:
+
+| Option              | Type     | Description                                             | Required | Extra info |
+|---------------------|----------|---------------------------------------------------------|----------|------------|
+| `token`             | `string` | The token of the upload                                 | true     |            |
+| `password`          | `string` | The current password of the file                        | false    |            |
+| `previous_password` | `string` | The previous password of the file, if changing password | false    |            |
+| `custom_expiry`     | `string` | Custom expiry in the same form as upload command        | false    |            |
+| `hide_filename`     | `bool`   | Sets whether the filename is visible in the URL or not  | false    |            |
+
+```python
+import waifuvault
+update_info = waifuvault.file_update(your_token,custom_expiry="2d")
+print(upload_info.retentionPeriod)
 ```
 
 ### Delete File<a id="delete-file"></a>
