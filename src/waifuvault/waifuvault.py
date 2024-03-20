@@ -35,6 +35,21 @@ def upload_file(file_obj: FileUpload):
     return __dict_to_obj(json.loads(response.text))
 
 
+# Update File
+def file_update(token: str, password: str = None, previous_password: str = None, custom_expiry: str = None, hide_filename:bool = False):
+    url = f"{__base_url__}/{token}"
+    response = requests.patch(
+        url,
+        data={'password': password,
+              'previousPassword': previous_password,
+              'customExpiry': custom_expiry,
+              'hideFilename': hide_filename
+              }
+    )
+    __check_error(response, False)
+    return __dict_to_obj(json.loads(response.text))
+
+
 # Get File Info
 def file_info(token: str, formatted: bool):
     url = f"{__base_url__}/{token}"
