@@ -43,7 +43,7 @@ def file_update(token: str, password: str = None, previous_password: str = None,
         data={'password': password,
               'previousPassword': previous_password,
               'customExpiry': custom_expiry,
-              'hideFilename': hide_filename
+              'hideFilename': "true" if hide_filename else "false"
               }
     )
     __check_error(response, False)
