@@ -107,5 +107,5 @@ def __dict_to_obj(dict_obj: any):
     return FileResponse(
         dict_obj["token"],
         dict_obj["url"],
-        dict_obj["protected"] == "true",
+        dict_obj["protected"],
         dict_obj["retentionPeriod"])

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "waifuvault"
-version = "1.2.4"
+version = "1.2.5"
 authors = [
     { name="Walker Aldridge", email="walker@waifuvault.moe" },
 ]
@@ -24,3 +24,6 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/waifuvault/waifuVault-python-api"
 Issues = "https://github.com/waifuvault/waifuVault-python-api/issues"
+
+[pytest]
+pythonpath = "src"
