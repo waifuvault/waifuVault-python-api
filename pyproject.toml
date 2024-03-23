@@ -13,7 +13,9 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "requests",
-    "requests_toolbelt"
+    "requests_toolbelt",
+    "pytest",
+    "pytest-mock"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
