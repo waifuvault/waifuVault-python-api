@@ -8,12 +8,13 @@ import waifuvault
 
 class Template:
     def __init__(self) -> None:
-        self.URL_file: str = 'https://walker.moe/assets/sunflowers.png'
+        self.test_filename = "test.png"
+        self.URL_file: str = "https://walker.moe/assets/sunflowers.png"
         self.local_file: str = self.download_file()
 
     def download_file(self) -> str:
         '''download file to use as a 'local' file for upload tests'''
-        with open ('test.png', mode='wb') as local_file:
+        with open (self.test_filename, mode='wb') as local_file:
             a = requests.get(self.URL_file)
             local_file.write(a.content)
         return local_file.name
@@ -28,7 +29,7 @@ def template():
 
     # clean up after tests run
     try:
-        os.remove('test.png')
+        os.remove(temp.test_filename)
     except:
         pass
 
@@ -115,7 +116,7 @@ def test_upload_buffer_error(template, mocker):
         upload_res = waifuvault.upload_file(upload_file)
 
 
-def test_file_info(template, mocker):
+def test_file_info(mocker):
     mock_get = mocker.patch('requests.get', return_value = ok_response_human)
     upload_info = waifuvault.file_info("test-token",True)
     mock_get.assert_called_once_with(
