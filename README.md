@@ -1,5 +1,7 @@
 # waifuvault-python-api
 
+![tests](https://github.com/waifuvault/waifuVault-python-api/actions/workflows/deploy.yml/badge.svg)
+
 This contains the official API bindings for uploading, deleting and obtaining files
 with [waifuvault.moe](https://waifuvault.moe/). Contains a full up to date API for interacting with the service
 
