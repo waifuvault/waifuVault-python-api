@@ -1,3 +1,4 @@
+import atexit
 import io
 import os
 import re
@@ -8,12 +9,18 @@ import waifuvault
 
 class Template:
     def __init__(self) -> None:
-        self.test_filename = "test.png"
+        self.test_filename: str = "test.png"
         self.URL_file: str = "https://walker.moe/assets/sunflowers.png"
         self.local_file: str = self.download_file()
 
     def download_file(self) -> str:
-        '''download file to use as a 'local' file for upload tests'''
+        '''
+        Download file to use as a 'local' file for upload tests.
+        If file already exists, return filename.
+        '''
+        if os.path.isfile(self.test_filename):
+            return self.test_filename
+        print('downloadding...')
         with open (self.test_filename, mode='wb') as local_file:
             a = requests.get(self.URL_file)
             local_file.write(a.content)
@@ -27,11 +34,13 @@ def template():
     #pass this to the tests and run them
     yield temp
 
-    # clean up after tests run
+def teardown():
     try:
-        os.remove(temp.test_filename)
+        os.remove(Template().test_filename)
     except:
         pass
+    
+atexit.register(teardown)
 
 # Response Mock Object
 class response_mock:
