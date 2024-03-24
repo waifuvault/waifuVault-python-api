@@ -20,7 +20,6 @@ class Template:
         '''
         if os.path.isfile(self.test_filename):
             return self.test_filename
-        print('downloadding...')
         with open (self.test_filename, mode='wb') as local_file:
             a = requests.get(self.URL_file)
             local_file.write(a.content)
