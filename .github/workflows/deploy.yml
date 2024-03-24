@@ -16,6 +16,14 @@ jobs:
       - name: prep action
         uses: actions/checkout@v4
 
+      - name: filter changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            project:
+              - 'pyproject.toml'
+
       - name: setup Python
         uses: actions/setup-python@v5
         with:
@@ -28,11 +36,13 @@ jobs:
           pytest tests/
 
       - name: Build a binary wheel
+        if: steps.changes.outputs.project == 'true'
         run: |
           pip install --upgrade build
           python -m build
 
       - name: Publish to PyPI
+        if: steps.changes.outputs.project == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
