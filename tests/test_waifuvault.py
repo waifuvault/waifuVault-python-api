@@ -1,9 +1,36 @@
 import io
+import os
 import re
 
 import pytest
+import requests
 import waifuvault
 
+class Template:
+    def __init__(self) -> None:
+        self.URL_file: str = 'https://walker.moe/assets/sunflowers.png'
+        self.local_file: str = self.download_file()
+
+    def download_file(self) -> str:
+        '''download file to use as a 'local' file for upload tests'''
+        with open ('test.png', mode='wb') as local_file:
+            a = requests.get('https://walker.moe/assets/sunflowers.png')
+            local_file.write(a.content)
+        return local_file.name
+
+@pytest.fixture
+def template():
+    #set up
+    temp = Template()
+
+    #now run the tests
+    yield temp
+
+    # clean up files
+    try:
+        os.remove('test.png')
+    except:
+        pass
 
 # Response Mock Object
 class response_mock:
@@ -26,14 +53,14 @@ bad_request = response_mock(False,
 
 
 # URL Upload Tests
-def test_upload_url(mocker):
+def test_upload_url(template: Template, mocker):
     mock_put = mocker.patch('requests.put', return_value = ok_response_numeric)
-    upload_file = waifuvault.FileUpload("https://walker.moe/assets/sunflowers.png", expires="10m")
+    upload_file = waifuvault.FileUpload(template.URL_file, expires="10m")
     upload_res = waifuvault.upload_file(upload_file)
     mock_put.assert_called_once_with(
         'https://waifuvault.moe/rest',
         params={'expires': '10m'},
-        data={'url': 'https://walker.moe/assets/sunflowers.png'},
+        data={'url': template.URL_file},
         headers=None)
     assert (upload_res.url == "https://waifuvault.moe/f/something"), "URL does not match"
     assert (upload_res.token == "test-token"), "Token does not match"
@@ -41,16 +68,16 @@ def test_upload_url(mocker):
     assert (upload_res.retentionPeriod == 100), "Retention does not match"
 
 
-def test_upload_url_error(mocker):
+def test_upload_url_error(template: Template, mocker):
     mock_put = mocker.patch('requests.put', return_value = bad_request)
-    upload_file = waifuvault.FileUpload("https://walker.moe/assets/sunflowers.png", expires="10m")
+    upload_file = waifuvault.FileUpload(template.URL_file, expires="10m")
     with pytest.raises(Exception, match=re.escape('Error 400 (BAD_REQUEST): Error Test')):
         upload_res = waifuvault.upload_file(upload_file)
 
 
-def test_upload_file(mocker):
+def test_upload_file(template: Template, mocker):
     mock_put = mocker.patch('requests.put', return_value = ok_response_numeric)
-    upload_file = waifuvault.FileUpload("tests/testfile.png", expires="10m")
+    upload_file = waifuvault.FileUpload(template.local_file, expires="10m")
     upload_res = waifuvault.upload_file(upload_file)
     mock_put.assert_called_once()
     assert (upload_res.url == "https://waifuvault.moe/f/something"), "URL does not match"
@@ -59,16 +86,16 @@ def test_upload_file(mocker):
     assert (upload_res.retentionPeriod == 100), "Retention does not match"
 
 
-def test_upload_file_error(mocker):
+def test_upload_file_error(template: Template, mocker):
     mock_put = mocker.patch('requests.put', return_value = bad_request)
-    upload_file = waifuvault.FileUpload("tests/testfile.png", expires="10m")
+    upload_file = waifuvault.FileUpload(template.local_file, expires="10m")
     with pytest.raises(Exception, match=re.escape('Error 400 (BAD_REQUEST): Error Test')):
         upload_res = waifuvault.upload_file(upload_file)
 
 
-def test_upload_buffer(mocker):
+def test_upload_buffer(template: Template, mocker):
     mock_put = mocker.patch('requests.put', return_value = ok_response_numeric)
-    with open("tests/testfile.png", "rb") as fh:
+    with open(template.local_file, "rb") as fh:
         buf = io.BytesIO(fh.read())
     upload_file = waifuvault.FileUpload(buf,"testfile_buf.png",expires="10m")
     upload_res = waifuvault.upload_file(upload_file)
@@ -79,16 +106,16 @@ def test_upload_buffer(mocker):
     assert (upload_res.retentionPeriod == 100), "Retention does not match"
 
 
-def test_upload_buffer_error(mocker):
+def test_upload_buffer_error(template, mocker):
     mock_put = mocker.patch('requests.put', return_value = bad_request)
-    with open("tests/testfile.png", "rb") as fh:
+    with open(template.local_file, "rb") as fh:
         buf = io.BytesIO(fh.read())
     upload_file = waifuvault.FileUpload(buf, "testfile_buf.png", expires="10m")
     with pytest.raises(Exception, match=re.escape('Error 400 (BAD_REQUEST): Error Test')):
         upload_res = waifuvault.upload_file(upload_file)
 
 
-def test_file_info(mocker):
+def test_file_info(template, mocker):
     mock_get = mocker.patch('requests.get', return_value = ok_response_human)
     upload_info = waifuvault.file_info("test-token",True)
     mock_get.assert_called_once_with(
