@@ -14,7 +14,7 @@ class Template:
     def download_file(self) -> str:
         '''download file to use as a 'local' file for upload tests'''
         with open ('test.png', mode='wb') as local_file:
-            a = requests.get('https://walker.moe/assets/sunflowers.png')
+            a = requests.get(self.URL_file)
             local_file.write(a.content)
         return local_file.name
 
@@ -23,10 +23,10 @@ def template():
     #set up
     temp = Template()
 
-    #now run the tests
+    #pass this to the tests and run them
     yield temp
 
-    # clean up files
+    # clean up after tests run
     try:
         os.remove('test.png')
     except:
