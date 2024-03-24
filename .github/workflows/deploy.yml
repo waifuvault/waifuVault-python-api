@@ -1,6 +1,4 @@
-# More information on this workflow: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-name: Deploy to PyPI
+name: Test and Deploy
 
 on:
   push:
@@ -25,7 +23,8 @@ jobs:
 
       - name: Run Tests
         run: |
-          pip install pytest pytest-mock requests requests-toolbelt
+          pip install --upgrade pip
+          pip install -e ".[dev]"
           pytest tests/
 
       - name: Build a binary wheel
