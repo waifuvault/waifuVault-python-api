@@ -33,4 +33,4 @@ Homepage = "https://github.com/waifuvault/waifuVault-python-api"
 Issues = "https://github.com/waifuvault/waifuVault-python-api/issues"
 
 [pytest]
-pythonpath = "src"
+pythonpath = src
