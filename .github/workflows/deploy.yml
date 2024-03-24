@@ -23,6 +23,11 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: Run Tests
+        run: |
+          pip install pytest pytest-mock
+          pytest tests/
+
       - name: Build a binary wheel
         run: |
           pip install --upgrade build
