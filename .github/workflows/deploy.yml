@@ -25,7 +25,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          pip install pytest pytest-mock
+          pip install pytest pytest-mock requests requests-toolbelt
           pytest tests/
 
       - name: Build a binary wheel
