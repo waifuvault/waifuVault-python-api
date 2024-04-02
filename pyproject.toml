@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "waifuvault"
-version = "1.3.7"
+version = "1.3.8"
 authors = [
     { name="Walker Aldridge", email="walker@waifuvault.moe" },
 ]
