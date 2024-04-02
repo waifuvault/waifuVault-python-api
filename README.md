@@ -31,13 +31,15 @@ import waifuvault
 
 To Upload a file, use the `upload_file` function. This function takes the following options as an object:
 
-| Option         | Type               | Description                                                 | Required       | Extra info                       |
-|----------------|--------------------|-------------------------------------------------------------|----------------|----------------------------------|
-| `target`       | `string or buffer` | The target to upload can be a buffer, URL or filename       | true           | URL or file path                 |
-| `target_name`  | `string`           | The filename of the target if it is a buffer                | true if buffer | Filename with extension          |
-| `expires`      | `string`           | A string containing a number and a unit (1d = 1day)         | false          | Valid units are `m`, `h` and `d` |
-| `hideFilename` | `boolean`          | If true, then the uploaded filename won't appear in the URL | false          | Defaults to `false`              |
-| `password`     | `string`           | If set, then the uploaded file will be encrypted            | false          |                                  |
+| Option            | Type               | Description                                                     | Required       | Extra info                       |
+|-------------------|--------------------|-----------------------------------------------------------------|----------------|----------------------------------|
+| `target`          | `string or buffer` | The target to upload can be a buffer, URL or filename           | true           | URL or file path                 |
+| `target_name`     | `string`           | The filename of the target if it is a buffer                    | true if buffer | Filename with extension          |
+| `expires`         | `string`           | A string containing a number and a unit (1d = 1day)             | false          | Valid units are `m`, `h` and `d` |
+| `hideFilename`    | `boolean`          | If true, then the uploaded filename won't appear in the URL     | false          | Defaults to `false`              |
+| `password`        | `string`           | If set, then the uploaded file will be encrypted                | false          |                                  |
+| `oneTimeDownload` | `boolean`          | if supplied, the file will be deleted as soon as it is accessed | false          |                                  |
+
 
 Using a URL:
 

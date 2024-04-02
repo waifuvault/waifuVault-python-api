@@ -16,11 +16,11 @@ class response_mock:
 
 # Mocked responses
 ok_response_numeric = response_mock(True,
-                                    '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "protected":false, "retentionPeriod":100}')
+                                    '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "retentionPeriod":100, "options":{"protected": false, "oneTimeDownload": false, "hideFilename": false}}')
 ok_response_numeric_protected = response_mock(True,
-                                    '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "protected":true, "retentionPeriod":100}')
+                                    '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "retentionPeriod":100, "options":{"protected": true, "oneTimeDownload": false, "hideFilename": false}}')
 ok_response_human = response_mock(True,
-                                  '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "protected":false, "retentionPeriod":"10 minutes"}')
+                                  '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "retentionPeriod":"10 minutes", "options":{"protected": false, "oneTimeDownload": false, "hideFilename": false}}')
 bad_request = response_mock(False,
                             '{"name": "BAD_REQUEST", "message": "Error Test", "status": 400}',code=400)
 
@@ -42,7 +42,7 @@ def test_upload_url(mocker):
     # Then
     assert (upload_res.url == "https://waifuvault.moe/f/something"), "URL does not match"
     assert (upload_res.token == "test-token"), "Token does not match"
-    assert (upload_res.protected is False), "Protected does not match"
+    assert (upload_res.options.protected is False), "Protected does not match"
     assert (upload_res.retentionPeriod == 100), "Retention does not match"
 
 
@@ -70,7 +70,7 @@ def test_upload_file(mocker):
     mock_put.assert_called_once()
     assert (upload_res.url == "https://waifuvault.moe/f/something"), "URL does not match"
     assert (upload_res.token == "test-token"), "Token does not match"
-    assert (upload_res.protected is False), "Protected does not match"
+    assert (upload_res.options.protected is False), "Protected does not match"
     assert (upload_res.retentionPeriod == 100), "Retention does not match"
 
 
@@ -100,7 +100,7 @@ def test_upload_buffer(mocker):
     mock_put.assert_called_once()
     assert (upload_res.url == "https://waifuvault.moe/f/something"), "URL does not match"
     assert (upload_res.token == "test-token"), "Token does not match"
-    assert (upload_res.protected is False), "Protected does not match"
+    assert (upload_res.options.protected is False), "Protected does not match"
     assert (upload_res.retentionPeriod == 100), "Retention does not match"
 
 
@@ -131,7 +131,7 @@ def test_file_info(mocker):
         params={'formatted': 'true'})
     assert (upload_info.url == "https://waifuvault.moe/f/something"), "URL does not match"
     assert (upload_info.token == "test-token"), "Token does not match"
-    assert (upload_info.protected is False), "Protected does not match"
+    assert (upload_info.options.protected is False), "Protected does not match"
     assert (upload_info.retentionPeriod == "10 minutes"), "Retention does not match"
 
 
@@ -157,7 +157,7 @@ def test_update_info(mocker):
         data={'password': 'dangerWaifu','hideFilename': 'false'})
     assert (update_info.url == "https://waifuvault.moe/f/something"), "URL does not match"
     assert (update_info.token == "test-token"), "Token does not match"
-    assert (update_info.protected is True), "Protected does not match"
+    assert (update_info.options.protected is True), "Protected does not match"
     assert (update_info.retentionPeriod == 100), "Retention does not match"
 
 

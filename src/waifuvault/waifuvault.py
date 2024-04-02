@@ -7,7 +7,7 @@ from io import BytesIO
 import requests
 from requests_toolbelt import MultipartEncoder
 
-from .waifumodels import FileResponse, FileUpload
+from .waifumodels import FileResponse, FileUpload, FileOptions
 
 
 # Upload File
@@ -107,5 +107,9 @@ def __dict_to_obj(dict_obj: any):
     return FileResponse(
         dict_obj["token"],
         dict_obj["url"],
-        dict_obj["protected"],
-        dict_obj["retentionPeriod"])
+        dict_obj["retentionPeriod"],
+        FileOptions(
+            dict_obj["options"]["hideFilename"],
+            dict_obj["options"]["oneTimeDownload"],
+            dict_obj["options"]["protected"]
+        ))
