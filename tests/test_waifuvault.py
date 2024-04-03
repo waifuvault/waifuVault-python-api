@@ -212,3 +212,17 @@ def test_download_error(mocker):
     # Then
     with pytest.raises(Exception, match=re.escape('Error 400 (BAD_REQUEST): Error Test')):
         file_down = waifuvault.get_file(waifuvault.FileResponse(url="https://waifuvault.moe/f/something"), "dangerWaifu")
+
+
+def test_url_args():
+    # Given
+    file_down = waifuvault.FileUpload("https://waifuvault.moe/test", expires="1d", password="testpassword", hidefilename=True, oneTimeDownload=True)
+
+    # When
+    args = file_down.build_parameters()
+
+    # Then
+    assert (args.get("expires") == "1d"), "expires not in arguments"
+    assert (args.get("password") == "testpassword"), "password not in arguments"
+    assert (args.get("hide_filename") == "true"), "hide_filename not in arguments"
+    assert (args.get("one_time_download") == "true"), "one_time_download not in arguments"
