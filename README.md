@@ -1,7 +1,7 @@
 # waifuvault-python-api
 
 ![tests](https://github.com/waifuvault/waifuVault-python-api/actions/workflows/deploy.yml/badge.svg)
-[![GitHub issues](https://img.shields.io/github/issues/waifuvault/waifuVault-python-api.png)](https://github.com/waifuvault/waifuVault=python-api/issues)
+[![GitHub issues](https://img.shields.io/github/issues/waifuvault/waifuVault-python-api.png)](https://github.com/waifuvault/waifuVault-python-api/issues)
 [![last-commit](https://img.shields.io/github/last-commit/waifuvault/waifuVault-python-api)](https://github.com/waifuvault/waifuVault-python-api/commits/master)
 
 This contains the official API bindings for uploading, deleting and obtaining files
