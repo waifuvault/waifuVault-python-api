@@ -22,7 +22,7 @@ def upload_file(file_obj: FileUpload):
         header_data = None
     else:
         multipart_data = MultipartEncoder(
-            fields={'file': (os.path.basename(file_obj.target), open(os.path.expanduser(file_obj.target), 'rb'))}
+            fields={'file': (os.path.basename(file_obj.target), open(file_obj.target, 'rb'))}
         )
         header_data = {'Content-Type': multipart_data.content_type}
 
