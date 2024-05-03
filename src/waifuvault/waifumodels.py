@@ -21,8 +21,6 @@ class FileUpload:
 
     def build_parameters(self):
         parameters = {}
-        if self.password:
-            parameters['password'] = self.password
         if self.expires:
             parameters['expires'] = self.expires
         if self.hidefilename:
