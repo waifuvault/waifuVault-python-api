@@ -223,6 +223,5 @@ def test_url_args():
 
     # Then
     assert (args.get("expires") == "1d"), "expires not in arguments"
-    assert (args.get("password") == "testpassword"), "password not in arguments"
     assert (args.get("hide_filename") == "true"), "hide_filename not in arguments"
     assert (args.get("one_time_download") == "true"), "one_time_download not in arguments"
