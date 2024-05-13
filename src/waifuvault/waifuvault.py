@@ -12,17 +12,23 @@ from .waifumodels import FileResponse, FileUpload, FileOptions
 
 # Upload File
 def upload_file(file_obj: FileUpload):
+    fields = {}
+    if file_obj.password:
+        fields['password'] = file_obj.password
     if file_obj.is_buffer():
+        fields['file'] = (file_obj.target_name, file_obj.target)
         multipart_data = MultipartEncoder(
-            fields={'file': (file_obj.target_name, file_obj.target)}
+            fields=fields
         )
         header_data = {'Content-Type': multipart_data.content_type}
     elif file_obj.is_url():
-        multipart_data = {'url': file_obj.target}
+        fields['url'] = file_obj.target
+        multipart_data = fields
         header_data = None
     else:
+        fields['file'] = (os.path.basename(file_obj.target), open(file_obj.target, 'rb'))
         multipart_data = MultipartEncoder(
-            fields={'file': (os.path.basename(file_obj.target), open(file_obj.target, 'rb'))}
+            fields=fields
         )
         header_data = {'Content-Type': multipart_data.content_type}
 
