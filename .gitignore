@@ -2,3 +2,4 @@
 waifuvault.egg-info
 venv
 __pycache__
+/dist/
