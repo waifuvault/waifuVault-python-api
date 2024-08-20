@@ -3,9 +3,10 @@ import io
 
 
 class FileUpload:
-    def __init__(self, target: any, target_name: str = "unknown", expires: str = None, password: str = None, hidefilename: bool = False, oneTimeDownload: bool = False):
+    def __init__(self, target: any, target_name: str = "unknown", bucket_token: str = None,  expires: str = None, password: str = None, hidefilename: bool = False, oneTimeDownload: bool = False):
         self.target = target
         self.target_name = target_name
+        self.bucket_token = bucket_token
         self.hidefilename = hidefilename
         self.one_time_download = oneTimeDownload
         self.expires = expires
@@ -31,10 +32,11 @@ class FileUpload:
 
 
 class FileResponse:
-    def __init__(self, token: str = None, url: str = None, retention_period: any = None, options: any = None):
+    def __init__(self, token: str = None, url: str = None, retention_period: any = None, bucket: str = None, options: any = None):
         self.token = token
         self.url = url
         self.retentionPeriod = retention_period
+        self.bucket = bucket
         self.options = options
 
 
@@ -43,3 +45,9 @@ class FileOptions:
         self.hideFilename = hide_filename
         self.oneTimeDownload = one_time_download
         self.protected = protected
+
+
+class BucketResponse:
+    def __init__(self, token: str = None, files: any = None):
+        self.token = token
+        self.files = files

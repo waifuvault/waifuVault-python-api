@@ -22,6 +22,9 @@ This API contains 5 interactions:
 3. [Update file Info](#update-file-info)
 4. [Delete File](#delete-file)
 5. [Get File](#get-file)
+6. [Create Bucket](#create-bucket)
+7. [Delete Bucket](#delete-bucket)
+8. [Get Bucket](#get-bucket)
 
 The package is namespaced to `waifuvault`, so to import it, simply:
 
@@ -37,6 +40,7 @@ To Upload a file, use the `upload_file` function. This function takes the follow
 |-------------------|--------------------|-----------------------------------------------------------------|----------------|----------------------------------|
 | `target`          | `string or buffer` | The target to upload can be a buffer, URL or filename           | true           | URL or file path                 |
 | `target_name`     | `string`           | The filename of the target if it is a buffer                    | true if buffer | Filename with extension          |
+| `bucket_token`    | 'string'           | Token for a bucket to upload the file into                      | false          | Create bucket gives token        |
 | `expires`         | `string`           | A string containing a number and a unit (1d = 1day)             | false          | Valid units are `m`, `h` and `d` |
 | `hideFilename`    | `boolean`          | If true, then the uploaded filename won't appear in the URL     | false          | Defaults to `false`              |
 | `password`        | `string`           | If set, then the uploaded file will be encrypted                | false          |                                  |
@@ -182,3 +186,54 @@ file_enc_down = waifuvault.get_file(upload_enc_res,"your_password")
 print(file_enc_down.__sizeof__())
 ```
 
+### Create Bucket<a id="create-bucket"></a>
+
+Buckets are virtual collections that are linked to your IP and a token. When you create a bucket, you will receive a bucket token that you can use in Get Bucket to get all the files in that bucket
+
+> **NOTE:** Only one bucket is allowed per client IP address, if you call it more than once, it will return the same bucket token
+
+To create a bucket, use the `create_bucket` function. This function does not take any arguments.
+
+```python
+import waifuvault
+bucket = waifuvault.create_bucket()
+print(bucket.token)
+```
+
+### Delete Bucket<a id="delete-bucket"></a>
+
+Deleting a bucket will delete the bucket and all the files it contains.
+
+> **IMPORTANT:**  All contained files will be **DELETED** along with the Bucket!
+
+To delete a bucket, you must call the `deleteBucket` function with the following options as parameters:
+
+| Option      | Type      | Description                       | Required | Extra info        |
+|-------------|-----------|-----------------------------------|----------|-------------------|
+| `token`     | `string`  | The token of the bucket to delete | true     |                   |
+
+> **NOTE:** `deleteBucket` will only ever either return `true` or throw an exception if the token is invalid
+
+```python
+import waifuvault
+resp = waifuvault.delete_bucket("some-bucket-token")
+print(resp)
+```
+
+### Get Bucket<a id="get-bucket"></a>
+
+To get the list of files contained in a bucket, you use the `get_bucket` functions and supply the token.
+This function takes the following options as parameters:
+
+| Option      | Type      | Description             | Required | Extra info        |
+|-------------|-----------|-------------------------|----------|-------------------|
+| `token`     | `string`  | The token of the bucket | true     |                   |
+
+This will respond with the bucket and all the files the bucket contains.
+
+```python
+import waifuvault
+bucket = waifuvault.get_bucket("some-bucket-token")
+print(bucket.token)
+print(bucket.files)  # Array of file objects
+```
