@@ -12,7 +12,7 @@ from .waifumodels import FileResponse, FileUpload, FileOptions, BucketResponse
 
 # Create Bucket
 def create_bucket():
-    url = f"{__base_url__}/bucket/createBucket"
+    url = f"{__base_url__}/bucket/create"
     response = requests.get(url)
     __check_error(response, False)
     return __bucket_to_obj(json.loads(response.text))
@@ -28,7 +28,7 @@ def delete_bucket(token: str):
 
 # Get Bucket
 def get_bucket(token: str):
-    url = f"{__base_url__}/bucket"
+    url = f"{__base_url__}/bucket/get"
     data = {"bucket_token": token}
     response = requests.post(url, json=data)
     __check_error(response, False)
