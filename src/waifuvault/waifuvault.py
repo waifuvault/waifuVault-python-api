@@ -7,11 +7,39 @@ from io import BytesIO
 import requests
 from requests_toolbelt import MultipartEncoder
 
-from .waifumodels import FileResponse, FileUpload, FileOptions
+from .waifumodels import FileResponse, FileUpload, FileOptions, BucketResponse
+
+
+# Create Bucket
+def create_bucket():
+    url = f"{__base_url__}/bucket/createBucket"
+    response = requests.get(url)
+    __check_error(response, False)
+    return __bucket_to_obj(json.loads(response.text))
+
+
+# Delete Bucket
+def delete_bucket(token: str):
+    url = f"{__base_url__}/bucket/{token}"
+    response = requests.delete(url)
+    __check_error(response, False)
+    return True if response.text == "true" else False
+
+
+# Get Bucket
+def get_bucket(token: str):
+    url = f"{__base_url__}/bucket"
+    data = {"bucket_token": token}
+    response = requests.post(url, json=data)
+    __check_error(response, False)
+    return __bucket_to_obj(json.loads(response.text))
 
 
 # Upload File
 def upload_file(file_obj: FileUpload):
+    url = __base_url__
+    if file_obj.bucket_token:
+        url += f"/{file_obj.bucket_token}"
     fields = {}
     if file_obj.password:
         fields['password'] = file_obj.password
@@ -33,7 +61,7 @@ def upload_file(file_obj: FileUpload):
         header_data = {'Content-Type': multipart_data.content_type}
 
     response = requests.put(
-        __base_url__,
+        url,
         params=file_obj.build_parameters(),
         data=multipart_data,
         headers=header_data)
@@ -111,11 +139,19 @@ def __check_error(response: requests.models.Response, is_download: bool):
 
 def __dict_to_obj(dict_obj: any):
     return FileResponse(
-        dict_obj["token"],
-        dict_obj["url"],
-        dict_obj["retentionPeriod"],
+        dict_obj.get("token"),
+        dict_obj.get("url"),
+        dict_obj.get("retentionPeriod"),
+        dict_obj.get("bucket"),
         FileOptions(
             dict_obj["options"]["hideFilename"],
             dict_obj["options"]["oneTimeDownload"],
             dict_obj["options"]["protected"]
         ))
+
+
+def __bucket_to_obj(bucket_obj: any):
+    return BucketResponse(
+        bucket_obj.get("token"),
+        bucket_obj.get("files")
+    )

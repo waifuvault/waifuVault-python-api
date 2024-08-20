@@ -16,11 +16,11 @@ class response_mock:
 
 # Mocked responses
 ok_response_numeric = response_mock(True,
-                                    '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "retentionPeriod":100, "options":{"protected": false, "oneTimeDownload": false, "hideFilename": false}}')
+                                    '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "bucket":"test-bucket", "retentionPeriod":100, "options":{"protected": false, "oneTimeDownload": false, "hideFilename": false}}')
 ok_response_numeric_protected = response_mock(True,
-                                    '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "retentionPeriod":100, "options":{"protected": true, "oneTimeDownload": false, "hideFilename": false}}')
+                                    '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "bucket":"test-bucket", "retentionPeriod":100, "options":{"protected": true, "oneTimeDownload": false, "hideFilename": false}}')
 ok_response_human = response_mock(True,
-                                  '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "retentionPeriod":"10 minutes", "options":{"protected": false, "oneTimeDownload": false, "hideFilename": false}}')
+                                  '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "bucket":"test-bucket", "retentionPeriod":"10 minutes", "options":{"protected": false, "oneTimeDownload": false, "hideFilename": false}}')
 bad_request = response_mock(False,
                             '{"name": "BAD_REQUEST", "message": "Error Test", "status": 400}',code=400)
 
@@ -42,6 +42,27 @@ def test_upload_url(mocker):
     # Then
     assert (upload_res.url == "https://waifuvault.moe/f/something"), "URL does not match"
     assert (upload_res.token == "test-token"), "Token does not match"
+    assert (upload_res.options.protected is False), "Protected does not match"
+    assert (upload_res.retentionPeriod == 100), "Retention does not match"
+
+
+def test_upload_bucket(mocker):
+    # Given
+    mock_put = mocker.patch('requests.put', return_value = ok_response_numeric)
+    upload_file = waifuvault.FileUpload("https://walker.moe/assets/sunflowers.png", expires="10m", bucket_token="test-bucket")
+
+    # When
+    upload_res = waifuvault.upload_file(upload_file)
+    mock_put.assert_called_once_with(
+        'https://waifuvault.moe/rest/test-bucket',
+        params={'expires': '10m'},
+        data={'url': 'https://walker.moe/assets/sunflowers.png'},
+        headers=None)
+
+    # Then
+    assert (upload_res.url == "https://waifuvault.moe/f/something"), "URL does not match"
+    assert (upload_res.token == "test-token"), "Token does not match"
+    assert (upload_res.bucket == "test-bucket"), "Bucket does not match"
     assert (upload_res.options.protected is False), "Protected does not match"
     assert (upload_res.retentionPeriod == 100), "Retention does not match"
 
@@ -212,6 +233,48 @@ def test_download_error(mocker):
     # Then
     with pytest.raises(Exception, match=re.escape('Error 400 (BAD_REQUEST): Error Test')):
         file_down = waifuvault.get_file(waifuvault.FileResponse(url="https://waifuvault.moe/f/something"), "dangerWaifu")
+
+
+def test_create_bucket(mocker):
+    # Given
+    mock_create = mocker.patch('requests.get',
+                            return_value=response_mock(True,
+                                                       '{"token": "test-bucket", "files":[]}'))
+
+    # When
+    bucket = waifuvault.create_bucket()
+
+    # Then
+    mock_create.assert_called_once_with('https://waifuvault.moe/rest/bucket/createBucket')
+    assert (bucket.token == "test-bucket"), "Create Bucket did not return bucket"
+
+
+def test_get_bucket(mocker):
+    # Given
+    mock_get = mocker.patch('requests.post',
+                               return_value=response_mock(True,
+                                                          '{"token": "test-bucket", "files":[]}'))
+
+    # When
+    bucket = waifuvault.get_bucket("test-bucket")
+
+    # Then
+    mock_get.assert_called_once_with('https://waifuvault.moe/rest/bucket', json={'bucket_token': 'test-bucket'})
+    assert (bucket.token == "test-bucket"), "Get Bucket did not return bucket"
+
+
+def test_delete_bucket(mocker):
+    # Given
+    mock_del = mocker.patch('requests.delete',
+                            return_value=response_mock(True,
+                                                       'true'))
+
+    # When
+    del_bucket = waifuvault.delete_bucket("test-bucket")
+
+    # Then
+    mock_del.assert_called_once_with('https://waifuvault.moe/rest/bucket/test-bucket')
+    assert (del_bucket is True), "Delete Bucket did not return true"
 
 
 def test_url_args():
