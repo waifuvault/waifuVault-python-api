@@ -245,7 +245,7 @@ def test_create_bucket(mocker):
     bucket = waifuvault.create_bucket()
 
     # Then
-    mock_create.assert_called_once_with('https://waifuvault.moe/rest/bucket/createBucket')
+    mock_create.assert_called_once_with('https://waifuvault.moe/rest/bucket/create')
     assert (bucket.token == "test-bucket"), "Create Bucket did not return bucket"
 
 
@@ -259,7 +259,7 @@ def test_get_bucket(mocker):
     bucket = waifuvault.get_bucket("test-bucket")
 
     # Then
-    mock_get.assert_called_once_with('https://waifuvault.moe/rest/bucket', json={'bucket_token': 'test-bucket'})
+    mock_get.assert_called_once_with('https://waifuvault.moe/rest/bucket/get', json={'bucket_token': 'test-bucket'})
     assert (bucket.token == "test-bucket"), "Get Bucket did not return bucket"
 
 

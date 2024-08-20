@@ -31,15 +31,6 @@ class FileUpload:
         return parameters
 
 
-class FileResponse:
-    def __init__(self, token: str = None, url: str = None, retention_period: any = None, bucket: str = None, options: any = None):
-        self.token = token
-        self.url = url
-        self.retentionPeriod = retention_period
-        self.bucket = bucket
-        self.options = options
-
-
 class FileOptions:
     def __init__(self, hide_filename: bool = False, one_time_download: bool = False, protected: bool = False):
         self.hideFilename = hide_filename
@@ -47,7 +38,16 @@ class FileOptions:
         self.protected = protected
 
 
+class FileResponse:
+    def __init__(self, token: str = None, url: str = None, retention_period: any = None, bucket: str = None, options: FileOptions = None):
+        self.token = token
+        self.url = url
+        self.retentionPeriod = retention_period
+        self.bucket = bucket
+        self.options = options
+
+
 class BucketResponse:
-    def __init__(self, token: str = None, files: any = None):
+    def __init__(self, token: str = None, files: list[FileResponse] = None):
         self.token = token
         self.files = files

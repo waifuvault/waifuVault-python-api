@@ -40,7 +40,7 @@ To Upload a file, use the `upload_file` function. This function takes the follow
 |-------------------|--------------------|-----------------------------------------------------------------|----------------|----------------------------------|
 | `target`          | `string or buffer` | The target to upload can be a buffer, URL or filename           | true           | URL or file path                 |
 | `target_name`     | `string`           | The filename of the target if it is a buffer                    | true if buffer | Filename with extension          |
-| `bucket_token`    | 'string'           | Token for a bucket to upload the file into                      | false          | Create bucket gives token        |
+| `bucket_token`    | `string`           | Token for a bucket to upload the file into                      | false          | Create bucket gives token        |
 | `expires`         | `string`           | A string containing a number and a unit (1d = 1day)             | false          | Valid units are `m`, `h` and `d` |
 | `hideFilename`    | `boolean`          | If true, then the uploaded filename won't appear in the URL     | false          | Defaults to `false`              |
 | `password`        | `string`           | If set, then the uploaded file will be encrypted                | false          |                                  |
@@ -206,7 +206,7 @@ Deleting a bucket will delete the bucket and all the files it contains.
 
 > **IMPORTANT:**  All contained files will be **DELETED** along with the Bucket!
 
-To delete a bucket, you must call the `deleteBucket` function with the following options as parameters:
+To delete a bucket, you must call the `delete_bucket` function with the following options as parameters:
 
 | Option      | Type      | Description                       | Required | Extra info        |
 |-------------|-----------|-----------------------------------|----------|-------------------|
