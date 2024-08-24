@@ -253,7 +253,7 @@ def test_get_bucket(mocker):
     # Given
     mock_get = mocker.patch('requests.post',
                                return_value=response_mock(True,
-                                                          '{"token": "test-bucket", "files":[]}'))
+                                                          '{"token": "test-bucket", "files":[{"token":"some-file-token", "url":"some-file-url", "bucket":"test-bucket", "retentionPeriod":10, "options":{"hideFilename":false, "oneTimeDownload": false, "protected":false}}]}'))
 
     # When
     bucket = waifuvault.get_bucket("test-bucket")
@@ -261,6 +261,8 @@ def test_get_bucket(mocker):
     # Then
     mock_get.assert_called_once_with('https://waifuvault.moe/rest/bucket/get', json={'bucket_token': 'test-bucket'})
     assert (bucket.token == "test-bucket"), "Get Bucket did not return bucket"
+    assert (isinstance(bucket.files[0], waifuvault.FileResponse)), "Get Bucket did not return a file response instance"
+    assert (bucket.files[0].bucket == "test-bucket"), "Get Bucket file response not in bucket"
 
 
 def test_delete_bucket(mocker):

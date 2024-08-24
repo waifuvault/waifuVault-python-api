@@ -151,7 +151,10 @@ def __dict_to_obj(dict_obj: any):
 
 
 def __bucket_to_obj(bucket_obj: any):
+    actual_files = []
+    for file in bucket_obj.get("files"):
+        actual_files.append(__dict_to_obj(file))
     return BucketResponse(
         bucket_obj.get("token"),
-        bucket_obj.get("files")
+        actual_files
     )
