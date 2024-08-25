@@ -7,7 +7,15 @@ from io import BytesIO
 import requests
 from requests_toolbelt import MultipartEncoder
 
-from .waifumodels import FileResponse, FileUpload, FileOptions, BucketResponse
+from .waifumodels import FileResponse, FileUpload, BucketResponse, RestrictionResponse
+
+
+# Get Restrictions
+def get_restrictions():
+    url = f"{__base_url__}/resources/restrictions"
+    response = requests.get(url)
+    __check_error(response, False)
+    return RestrictionResponse(rest_obj=json.loads(response.text))
 
 
 # Create Bucket
@@ -15,7 +23,7 @@ def create_bucket():
     url = f"{__base_url__}/bucket/create"
     response = requests.get(url)
     __check_error(response, False)
-    return __bucket_to_obj(json.loads(response.text))
+    return BucketResponse(dict_obj=json.loads(response.text))
 
 
 # Delete Bucket
@@ -32,7 +40,7 @@ def get_bucket(token: str):
     data = {"bucket_token": token}
     response = requests.post(url, json=data)
     __check_error(response, False)
-    return __bucket_to_obj(json.loads(response.text))
+    return BucketResponse(dict_obj=json.loads(response.text))
 
 
 # Upload File
@@ -66,7 +74,7 @@ def upload_file(file_obj: FileUpload):
         data=multipart_data,
         headers=header_data)
     __check_error(response, False)
-    return __dict_to_obj(json.loads(response.text))
+    return FileResponse(dict_obj=json.loads(response.text))
 
 
 # Update File
@@ -85,7 +93,7 @@ def file_update(token: str, password: str = None, previous_password: str = None,
         data=fields
     )
     __check_error(response, False)
-    return __dict_to_obj(json.loads(response.text))
+    return FileResponse(dict_obj=json.loads(response.text))
 
 
 # Get File Info
@@ -96,7 +104,7 @@ def file_info(token: str, formatted: bool):
         params={'formatted': 'true' if formatted else 'false'}
     )
     __check_error(response, False)
-    return __dict_to_obj(json.loads(response.text))
+    return FileResponse(dict_obj=json.loads(response.text))
 
 
 # Delete File
@@ -135,26 +143,3 @@ def __check_error(response: requests.models.Response, is_download: bool):
             message = "Password is Incorrect" if response.status_code == 403 and is_download else response.text
         raise Exception(f"Error {status} ({name}): {message}")
     return
-
-
-def __dict_to_obj(dict_obj: any):
-    return FileResponse(
-        dict_obj.get("token"),
-        dict_obj.get("url"),
-        dict_obj.get("retentionPeriod"),
-        dict_obj.get("bucket"),
-        FileOptions(
-            dict_obj["options"]["hideFilename"],
-            dict_obj["options"]["oneTimeDownload"],
-            dict_obj["options"]["protected"]
-        ))
-
-
-def __bucket_to_obj(bucket_obj: any):
-    actual_files = []
-    for file in bucket_obj.get("files"):
-        actual_files.append(__dict_to_obj(file))
-    return BucketResponse(
-        bucket_obj.get("token"),
-        actual_files
-    )

@@ -15,7 +15,7 @@ pip install waifuvault
 
 ## Usage
 
-This API contains 5 interactions:
+This API contains 8 interactions:
 
 1. [Upload File](#upload-file)
 2. [Get file Info](#get-file-info)
