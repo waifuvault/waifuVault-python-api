@@ -89,9 +89,9 @@ class Restriction:
         match self.type:
             case "MAX_FILE_SIZE":
                 if file.is_buffer():
-                    if len(file.target) > self.value:
-                        raise ValueError(f'File size {len(file.target)} is larger than max allowed {self.value}')
-                if os.path.getsize(file.target) > self.value:
+                    if file.target.getbuffer().nbytes > self.value:
+                        raise ValueError(f'File size {file.target.getbuffer().nbytes} is larger than max allowed {self.value}')
+                elif os.path.getsize(file.target) > self.value:
                     raise ValueError(f'File size {os.path.getsize(file.target)} is larger than max allowed {self.value}')
                 return
             case "BANNED_MIME_TYPE":

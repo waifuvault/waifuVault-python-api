@@ -23,12 +23,15 @@ ok_response_human = response_mock(True,
                                   '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "bucket":"test-bucket", "retentionPeriod":"10 minutes", "options":{"protected": false, "oneTimeDownload": false, "hideFilename": false}}')
 bad_request = response_mock(False,
                             '{"name": "BAD_REQUEST", "message": "Error Test", "status": 400}',code=400)
+restrictions_response = response_mock(True,
+                                      '[{"type": "MAX_FILE_SIZE","value": 536870912},{"type": "BANNED_MIME_TYPE","value": "application/x-msdownload,application/x-executable"}]')
 
 
 # URL Upload Tests
 def test_upload_url(mocker):
     # Given
     mock_put = mocker.patch('requests.put', return_value = ok_response_numeric)
+    mock_get = mocker.patch('requests.get', return_value=restrictions_response)
     upload_file = waifuvault.FileUpload("https://walker.moe/assets/sunflowers.png", expires="10m")
 
     # When
@@ -49,6 +52,7 @@ def test_upload_url(mocker):
 def test_upload_bucket(mocker):
     # Given
     mock_put = mocker.patch('requests.put', return_value = ok_response_numeric)
+    mock_get = mocker.patch('requests.get', return_value=restrictions_response)
     upload_file = waifuvault.FileUpload("https://walker.moe/assets/sunflowers.png", expires="10m", bucket_token="test-bucket")
 
     # When
@@ -70,6 +74,7 @@ def test_upload_bucket(mocker):
 def test_upload_url_error(mocker):
     # Given
     mock_put = mocker.patch('requests.put', return_value = bad_request)
+    mock_get = mocker.patch('requests.get', return_value=restrictions_response)
 
     # When
     upload_file = waifuvault.FileUpload("https://walker.moe/assets/sunflowers.png", expires="10m")
@@ -82,6 +87,7 @@ def test_upload_url_error(mocker):
 def test_upload_file(mocker):
     # Given
     mock_put = mocker.patch('requests.put', return_value = ok_response_numeric)
+    mock_get = mocker.patch('requests.get', return_value=restrictions_response)
     upload_file = waifuvault.FileUpload("tests/testfile.png", expires="10m")
 
     # When
@@ -98,6 +104,7 @@ def test_upload_file(mocker):
 def test_upload_file_error(mocker):
     # Given
     mock_put = mocker.patch('requests.put', return_value = bad_request)
+    mock_get = mocker.patch('requests.get', return_value=restrictions_response)
 
     # When
     upload_file = waifuvault.FileUpload("tests/testfile.png", expires="10m")
@@ -110,6 +117,7 @@ def test_upload_file_error(mocker):
 def test_upload_buffer(mocker):
     # Given
     mock_put = mocker.patch('requests.put', return_value = ok_response_numeric)
+    mock_get = mocker.patch('requests.get', return_value=restrictions_response)
     with open("tests/testfile.png", "rb") as fh:
         buf = io.BytesIO(fh.read())
     upload_file = waifuvault.FileUpload(buf,"testfile_buf.png",expires="10m")
@@ -128,6 +136,7 @@ def test_upload_buffer(mocker):
 def test_upload_buffer_error(mocker):
     # Given
     mock_put = mocker.patch('requests.put', return_value = bad_request)
+    mock_get = mocker.patch('requests.get', return_value=restrictions_response)
     with open("tests/testfile.png", "rb") as fh:
         buf = io.BytesIO(fh.read())
 
@@ -136,6 +145,21 @@ def test_upload_buffer_error(mocker):
 
     # Then
     with pytest.raises(Exception, match=re.escape('Error 400 (BAD_REQUEST): Error Test')):
+        upload_res = waifuvault.upload_file(upload_file)
+
+
+def test_upload_restriction_error(mocker):
+    # Given
+    mock_put = mocker.patch('requests.put', return_value = bad_request)
+    mock_get = mocker.patch('requests.get', return_value=restrictions_response)
+    with open("tests/testfile.png", "rb") as fh:
+        buf = io.BytesIO(fh.read())
+
+    # When
+    upload_file = waifuvault.FileUpload(buf, "testfile_buf.exe", expires="10m")
+
+    # Then
+    with pytest.raises(Exception, match=re.escape('File MIME type application/x-msdownload is not allowed for upload')):
         upload_res = waifuvault.upload_file(upload_file)
 
 
@@ -277,6 +301,19 @@ def test_delete_bucket(mocker):
     # Then
     mock_del.assert_called_once_with('https://waifuvault.moe/rest/bucket/test-bucket')
     assert (del_bucket is True), "Delete Bucket did not return true"
+
+
+def test_get_restrictions(mocker):
+    # Given
+    mock_get = mocker.patch('requests.get', return_value=restrictions_response)
+
+    # When
+    restrictions = waifuvault.get_restrictions()
+
+    # Then
+    mock_get.assert_called_once_with('https://waifuvault.moe/rest/resources/restrictions')
+    assert (isinstance(restrictions, waifuvault.RestrictionResponse)), "Get Restrictions did not return a retriction response instance"
+    assert (len(restrictions.Restrictions) == 2), "Get Restrictions wrong number of restrictions"
 
 
 def test_url_args():
