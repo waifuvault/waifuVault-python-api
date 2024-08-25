@@ -2,6 +2,7 @@
 import io
 import mimetypes
 import os
+from datetime import datetime, timedelta
 
 
 class FileUpload:
@@ -82,20 +83,25 @@ class Restriction:
             self.type = type
             self.value = value
 
-    def passes(self, file: FileUpload) -> bool:
+    def passes(self, file: FileUpload):
         if file.is_url():
-            return True
+            return
         match self.type:
             case "MAX_FILE_SIZE":
                 if file.is_buffer():
-                    return len(file.target) <= self.value
-                return os.path.getsize(file.target) <= self.value
+                    if len(file.target) > self.value:
+                        raise ValueError(f'File size {len(file.target)} is larger than max allowed {self.value}')
+                if os.path.getsize(file.target) > self.value:
+                    raise ValueError(f'File size {os.path.getsize(file.target)} is larger than max allowed {self.value}')
+                return
             case "BANNED_MIME_TYPE":
                 if file.is_buffer():
                     mime_type, encoding = mimetypes.guess_type(file.target_name)
                 else:
                     mime_type, encoding = mimetypes.guess_type(file.target)
-                return mime_type not in self.value.split(',')
+                if mime_type in self.value.split(','):
+                    raise ValueError(f'File MIME type {mime_type} is not allowed for upload')
+                return
             case _:
                 raise NotImplementedError(f'Restriction type {self.type} is not implemented')
 
@@ -106,5 +112,7 @@ class RestrictionResponse:
             self.Restrictions = []
             for rest in rest_obj:
                 self.Restrictions.append(Restriction(dict_obj=rest))
+            self.Expires = datetime.now() + timedelta(minutes=10)
         else:
             self.Restrictions = restrictions
+            self.Expires = datetime.now() + timedelta(minutes=10)

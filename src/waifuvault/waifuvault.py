@@ -1,7 +1,9 @@
 __base_url__ = "https://waifuvault.moe/rest"
+__restrictions = None
 
 import json
 import os
+from datetime import datetime
 from io import BytesIO
 
 import requests
@@ -46,6 +48,7 @@ def get_bucket(token: str):
 # Upload File
 def upload_file(file_obj: FileUpload):
     url = __base_url__
+    __check_restrictions(file_obj)
     if file_obj.bucket_token:
         url += f"/{file_obj.bucket_token}"
     fields = {}
@@ -143,3 +146,14 @@ def __check_error(response: requests.models.Response, is_download: bool):
             message = "Password is Incorrect" if response.status_code == 403 and is_download else response.text
         raise Exception(f"Error {status} ({name}): {message}")
     return
+
+
+# Check file restrictions
+def __check_restrictions(file_obj: FileUpload):
+    global __restrictions
+    if __restrictions is None:
+        __restrictions = get_restrictions()
+    if __restrictions is not None and __restrictions.Expires < datetime.now():
+        __restrictions = get_restrictions()
+    for restriction in __restrictions.Restrictions:
+        restriction.passes(file_obj)
