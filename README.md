@@ -15,7 +15,7 @@ pip install waifuvault
 
 ## Usage
 
-This API contains 5 interactions:
+This API contains 9 interactions:
 
 1. [Upload File](#upload-file)
 2. [Get file Info](#get-file-info)
@@ -25,6 +25,7 @@ This API contains 5 interactions:
 6. [Create Bucket](#create-bucket)
 7. [Delete Bucket](#delete-bucket)
 8. [Get Bucket](#get-bucket)
+9. [Get Restrictions](#get-restrictions)
 
 The package is namespaced to `waifuvault`, so to import it, simply:
 
@@ -46,6 +47,7 @@ To Upload a file, use the `upload_file` function. This function takes the follow
 | `password`        | `string`           | If set, then the uploaded file will be encrypted                | false          |                                  |
 | `oneTimeDownload` | `boolean`          | if supplied, the file will be deleted as soon as it is accessed | false          |                                  |
 
+> **NOTE:** Server restrictions are checked by the SDK client side *before* upload, and will throw a ValueError exception if they are violated
 
 Using a URL:
 
@@ -236,4 +238,17 @@ import waifuvault
 bucket = waifuvault.get_bucket("some-bucket-token")
 print(bucket.token)
 print(bucket.files)  # Array of file objects
+```
+
+### Get Restrictions<a id="get-restrictions"></a>
+
+To get the list of restrictions applied to the server, you use the `get_restrictions` functions.
+
+This will respond with an array of name, value entries describing the restrictions applied to the server.
+
+```python
+import waifuvault
+restricions = waifuvault.get_bucket("some-bucket-token")
+
+print(restrictions.Restrictions)  # Array of restriction objects
 ```
