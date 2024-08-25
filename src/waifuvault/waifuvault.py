@@ -20,6 +20,12 @@ def get_restrictions():
     return RestrictionResponse(rest_obj=json.loads(response.text))
 
 
+# Clear Restrictions
+def clear_restrictions():
+    global __restrictions
+    __restrictions = None
+
+
 # Create Bucket
 def create_bucket():
     url = f"{__base_url__}/bucket/create"

@@ -151,13 +151,12 @@ def test_upload_buffer_error(mocker):
 
 def test_upload_restriction_error(mocker):
     # Given
+    waifuvault.clear_restrictions()
     mock_put = mocker.patch('requests.put', return_value=bad_request)
     mock_get = mocker.patch('requests.get', return_value=restrictions_small_response)
-    with open("tests/testfile.png", "rb") as fh:
-        buf = io.BytesIO(fh.read())
 
     # When
-    upload_file = waifuvault.FileUpload(buf, "testfile_buf.png", expires="10m")
+    upload_file = waifuvault.FileUpload("tests/testfile.png", expires="10m")
 
     # Then
     with pytest.raises(Exception, match=re.escape('File size 97674 is larger than max allowed 100')):
