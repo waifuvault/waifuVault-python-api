@@ -15,7 +15,7 @@ pip install waifuvault
 
 ## Usage
 
-This API contains 9 interactions:
+This API contains 10 interactions:
 
 1. [Upload File](#upload-file)
 2. [Get file Info](#get-file-info)
@@ -26,6 +26,7 @@ This API contains 9 interactions:
 7. [Delete Bucket](#delete-bucket)
 8. [Get Bucket](#get-bucket)
 9. [Get Restrictions](#get-restrictions)
+10. [Clear Restrictions](#clear-restrictions)
 
 The package is namespaced to `waifuvault`, so to import it, simply:
 
@@ -246,9 +247,22 @@ To get the list of restrictions applied to the server, you use the `get_restrict
 
 This will respond with an array of name, value entries describing the restrictions applied to the server.
 
+> **NOTE:** Restrictions are cached for 10 minutes
+
 ```python
 import waifuvault
-restricions = waifuvault.get_bucket("some-bucket-token")
+restricions = waifuvault.get_restrictions()
 
 print(restrictions.Restrictions)  # Array of restriction objects
+```
+
+### Clear Restrictions<a id="clear-restrictions"></a>
+
+To clear the cached restrictions in the SDK, you use the `clear_restrictions` function.
+
+This will remove the cached restrictions and a fresh copy will be downloaded at the next upload.
+
+```python
+import waifuvault
+waifuvault.clear_restrictions()
 ```
