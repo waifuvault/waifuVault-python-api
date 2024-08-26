@@ -14,10 +14,12 @@ from .waifumodels import FileResponse, FileUpload, BucketResponse, RestrictionRe
 
 # Get Restrictions
 def get_restrictions():
+    global __restrictions
     url = f"{__base_url__}/resources/restrictions"
     response = requests.get(url)
     __check_error(response, False)
-    return RestrictionResponse(rest_obj=json.loads(response.text))
+    __restrictions = RestrictionResponse(rest_obj=json.loads(response.text))
+    return __restrictions
 
 
 # Clear Restrictions
