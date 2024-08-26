@@ -251,7 +251,7 @@ This will respond with an array of name, value entries describing the restrictio
 
 ```python
 import waifuvault
-restricions = waifuvault.get_restrictions()
+restrictions = waifuvault.get_restrictions()
 
 print(restrictions.Restrictions)  # Array of restriction objects
 ```
