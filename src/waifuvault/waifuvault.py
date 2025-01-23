@@ -9,9 +9,10 @@ from io import BytesIO
 import requests
 from requests_toolbelt import MultipartEncoder
 
-from .waifumodels import FileResponse, FileUpload, BucketResponse, RestrictionResponse
+from .waifumodels import FileResponse, FileUpload, BucketResponse, RestrictionResponse, FilesInfo, AlbumResponse
 
 
+# Resources Section
 # Get Restrictions
 def get_restrictions():
     global __restrictions
@@ -28,6 +29,15 @@ def clear_restrictions():
     __restrictions = None
 
 
+# File Stats
+def get_file_stats():
+    url = f"{__base_url__}/resources/stats/files"
+    response = requests.get(url)
+    __check_error(response, False)
+    return FilesInfo(dict_obj=json.loads(response.text))
+
+
+# Buckets Section
 # Create Bucket
 def create_bucket():
     url = f"{__base_url__}/bucket/create"
@@ -53,6 +63,70 @@ def get_bucket(token: str):
     return BucketResponse(dict_obj=json.loads(response.text))
 
 
+# Albums Section
+# Create Album
+def create_album(bucket_token: str, name: str):
+    url = f"{__base_url__}/album/{bucket_token}"
+    data = {"name": name}
+    response = requests.post(url, json=data)
+    __check_error(response, False)
+    return AlbumResponse(dict_obj=json.loads(response.text))
+
+
+# Delete Album
+def delete_album(album_token: str, delete_files: bool):
+    url = f"{__base_url__}/album/{album_token}?deleteFiles=" + ("true" if delete_files else "false")
+    response = requests.delete(url)
+    __check_error(response, False)
+    dict_obj = json.loads(response.text)
+    return dict_obj.get("success")
+
+
+# Get Album
+def get_album(token: str):
+    url = f"{__base_url__}/album/{token}"
+    response = requests.get(url)
+    __check_error(response, False)
+    return AlbumResponse(dict_obj=json.loads(response.text))
+
+
+# Associate File
+def associate_file(token: str, file_tokens: list[str]):
+    url = f"{__base_url__}/album/{token}/associate"
+    data = {"fileTokens": file_tokens}
+    response = requests.post(url, json=data)
+    __check_error(response, False)
+    return AlbumResponse(dict_obj=json.loads(response.text))
+
+
+# Disassociate File
+def disassociate_file(token: str, file_tokens: list[str]):
+    url = f"{__base_url__}/album/{token}/disassociate"
+    data = {"fileTokens": file_tokens}
+    response = requests.post(url, json=data)
+    __check_error(response, False)
+    return AlbumResponse(dict_obj=json.loads(response.text))
+
+
+# Share Album
+def share_album(token: str):
+    url = f"{__base_url__}/album/share/{token}"
+    response = requests.get(url)
+    __check_error(response, False)
+    dict_obj = json.loads(response.text)
+    return dict_obj.get("description")
+
+
+# Revoke Album
+def revoke_album(token: str):
+    url = f"{__base_url__}/album/revoke/{token}"
+    response = requests.get(url)
+    __check_error(response, False)
+    dict_obj = json.loads(response.text)
+    return dict_obj.get("success")
+
+
+# Files Section
 # Upload File
 def upload_file(file_obj: FileUpload):
     url = __base_url__
