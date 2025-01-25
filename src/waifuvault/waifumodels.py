@@ -100,8 +100,10 @@ class AlbumResponse:
             self.bucket_token = dict_obj.get("bucketToken")
             self.public_token = dict_obj.get("publicToken")
             self.name = dict_obj.get("name")
-            for file in dict_obj.get("files"):
-                self.files.append(FileResponse(dict_obj=file))
+            files = dict_obj.get("files")
+            if files is not None:
+                for file in files:
+                    self.files.append(FileResponse(dict_obj=file))
         else:
             self.token = token
             self.bucket_token = bucket_token
