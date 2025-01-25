@@ -29,6 +29,28 @@ restrictions_response = response_mock(True,
                                       '[{"type": "MAX_FILE_SIZE","value": 536870912},{"type": "BANNED_MIME_TYPE","value": "application/x-msdownload,application/x-executable"}]')
 restrictions_small_response = response_mock(True,
                                       '[{"type": "MAX_FILE_SIZE","value": 100},{"type": "BANNED_MIME_TYPE","value": "application/x-msdownload,application/x-executable"}]')
+size_response = response_mock(True,
+                              '{"recordCount": 100, "recordSize":100000}')
+
+album_response = response_mock(True,
+                               '{"token": "test-album", "bucketToken": "test-bucket", "publicToken": null, \
+                               "name": "test-name", "files": [{ \
+                                "token": "test-file", "url": "test-file-url", "views": 0, "bucket": "test-bucket",\
+                                "album": { \
+                                    "token": "test-album", \
+                                    "publicToken": null, \
+                                    "name": "test-name", \
+                                    "bucket": "test-bucket", \
+                                    "dateCreated": 0 \
+                                }, \
+                                "retentionPeriod": 0, \
+                                "options": { \
+                                    "hideFilename": false, \
+                                    "oneTimeDownload": false, \
+                                    "protected": false \
+                                    } \
+                                } \
+                                ]}')
 
 # URL Upload Tests
 def test_upload_url(mocker):
@@ -282,7 +304,7 @@ def test_create_bucket(mocker):
     # Given
     mock_create = mocker.patch('requests.get',
                             return_value=response_mock(True,
-                                                       '{"token": "test-bucket", "files":[]}'))
+                                                       '{"token": "test-bucket", "files":[], "albums":[]}'))
 
     # When
     bucket = waifuvault.create_bucket()
@@ -296,7 +318,7 @@ def test_get_bucket(mocker):
     # Given
     mock_get = mocker.patch('requests.post',
                                return_value=response_mock(True,
-                                                          '{"token": "test-bucket", "files":[{"token":"some-file-token", "url":"some-file-url", "bucket":"test-bucket", "retentionPeriod":10, "options":{"hideFilename":false, "oneTimeDownload": false, "protected":false}}]}'))
+                                                          '{"token": "test-bucket", "files":[{"token":"some-file-token", "url":"some-file-url", "bucket":"test-bucket", "retentionPeriod":10, "options":{"hideFilename":false, "oneTimeDownload": false, "protected":false}}], "albums":[]}'))
 
     # When
     bucket = waifuvault.get_bucket("test-bucket")
@@ -322,6 +344,114 @@ def test_delete_bucket(mocker):
     assert (del_bucket is True), "Delete Bucket did not return true"
 
 
+def test_create_album(mocker):
+    # Given
+    mock_get = mocker.patch('requests.post',
+                            return_value=response_mock(True,
+                                                       '{"token": "test-album", "bucketToken":"test-bucket", "publicToken":null, "name":"test-name", "files":[]}'))
+
+    # When
+    album = waifuvault.create_album("test-bucket", "test-name")
+
+    # Then
+    mock_get.assert_called_once_with('https://waifuvault.moe/rest/album/test-bucket', json={'name': 'test-name'})
+    assert (isinstance(album, waifuvault.AlbumResponse)), "Create Album did not return album response instance"
+    assert (album.token == "test-album"), "Create Album did not return album token"
+    assert (album.bucket_token == "test-bucket"), "Create Album did not return bucket token"
+    assert (album.name == "test-name"), "Create Album did not return album name"
+
+
+def test_delete_album(mocker):
+    # Given
+    mock_del = mocker.patch('requests.delete',
+                            return_value=response_mock(True,
+                                                       '{"success":true, "description":"yes"}'))
+
+    # When
+    del_album = waifuvault.delete_album("test-album", True)
+
+    # Then
+    mock_del.assert_called_once_with('https://waifuvault.moe/rest/album/test-album?deleteFiles=true')
+    assert (del_album is True), "Delete Album did not return true"
+
+
+def test_get_album(mocker):
+    # Given
+    mock_get = mocker.patch('requests.get',
+                            return_value=response_mock(True,
+                                                       '{"token":"test-token", "bucketToken": "test-bucket", "publicToken": null, "name":"test-name", "files":[]}'))
+
+    # When
+    album = waifuvault.get_album("test-album")
+
+    # Then
+    mock_get.assert_called_once_with('https://waifuvault.moe/rest/album/test-album')
+    assert (isinstance(album, waifuvault.AlbumResponse)), "Get Album did not return an album response instance"
+    assert (album.token == 'test-token'), "Get Album returned wrong album token"
+    assert (album.bucket_token == 'test-bucket'), "Get Album returned wrong bucket token"
+    assert (album.public_token is None), "Get Album returned wrong public token"
+    assert (album.name == 'test-name'), "Get Album returned wrong name"
+
+
+def test_share_album(mocker):
+    # Given
+    mock_share = mocker.patch('requests.get',
+                            return_value=response_mock(True,
+                                                       '{"success":true, "description":"test-url"}'))
+
+    # When
+    share_album = waifuvault.share_album("test-album")
+
+    # Then
+    mock_share.assert_called_once_with('https://waifuvault.moe/rest/album/share/test-album')
+    assert (share_album == 'test-url'), "Share Album did not return correct URL"
+
+
+def test_revoke_album(mocker):
+    # Given
+    mock_revoke = mocker.patch('requests.get',
+                            return_value=response_mock(True,
+                                                       '{"success":true, "description":"test-url"}'))
+
+    # When
+    revoke_album = waifuvault.revoke_album("test-album")
+
+    # Then
+    mock_revoke.assert_called_once_with('https://waifuvault.moe/rest/album/revoke/test-album')
+    assert (revoke_album is True), "Revoke Album did not return true"
+
+
+def test_associate_file(mocker):
+    # Given
+    mock_associate = mocker.patch('requests.post', return_value=album_response)
+
+    # When
+    album = waifuvault.associate_file("test-album", ["file1","file2"])
+
+    # Then
+    mock_associate.assert_called_once_with('https://waifuvault.moe/rest/album/test-album/associate', json={'fileTokens': ['file1','file2']})
+    assert (isinstance(album, waifuvault.AlbumResponse)), "Associate File did not return album response instance"
+    assert (album.token == "test-album"), "Associate File did not return album token"
+    assert (album.bucket_token == "test-bucket"), "Associate File did not return bucket token"
+    assert (album.name == "test-name"), "Associate File did not return album name"
+    assert (album.files[0].token == "test-file"), "Associate File did not return file token"
+
+
+def test_disassociate_file(mocker):
+    # Given
+    mock_disassociate = mocker.patch('requests.post', return_value=album_response)
+
+    # When
+    album = waifuvault.disassociate_file("test-album", ["file1","file2"])
+
+    # Then
+    mock_disassociate.assert_called_once_with('https://waifuvault.moe/rest/album/test-album/disassociate', json={'fileTokens': ['file1','file2']})
+    assert (isinstance(album, waifuvault.AlbumResponse)), "Disassociate File did not return album response instance"
+    assert (album.token == "test-album"), "Disassociate File did not return album token"
+    assert (album.bucket_token == "test-bucket"), "Disassociate File did not return bucket token"
+    assert (album.name == "test-name"), "Disassociate File did not return album name"
+
+
 def test_get_restrictions(mocker):
     # Given
     mock_get = mocker.patch('requests.get', return_value=restrictions_response)
@@ -333,6 +463,20 @@ def test_get_restrictions(mocker):
     mock_get.assert_called_once_with('https://waifuvault.moe/rest/resources/restrictions')
     assert (isinstance(restrictions, waifuvault.RestrictionResponse)), "Get Restrictions did not return a retriction response instance"
     assert (len(restrictions.Restrictions) == 2), "Get Restrictions wrong number of restrictions"
+
+
+def test_get_file_stats(mocker):
+    # Given
+    mock_get = mocker.patch('requests.get', return_value=size_response)
+
+    # When
+    file_stats = waifuvault.get_file_stats()
+
+    # Then
+    mock_get.assert_called_once_with('https://waifuvault.moe/rest/resources/stats/files')
+    assert (isinstance(file_stats, waifuvault.FilesInfo)), "Get File Stats did not return a FilesInfo response instance"
+    assert (file_stats.record_count == 100), "Get File Stats wrong number of records"
+    assert (file_stats.record_size== 100000), "Get File Stats wrong size of records"
 
 
 def test_url_args():
