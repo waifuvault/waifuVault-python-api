@@ -15,7 +15,7 @@ pip install waifuvault
 
 ## Usage
 
-This API contains 10 interactions:
+This API contains 18 interactions:
 
 1. [Upload File](#upload-file)
 2. [Get file Info](#get-file-info)
@@ -25,8 +25,16 @@ This API contains 10 interactions:
 6. [Create Bucket](#create-bucket)
 7. [Delete Bucket](#delete-bucket)
 8. [Get Bucket](#get-bucket)
-9. [Get Restrictions](#get-restrictions)
-10. [Clear Restrictions](#clear-restrictions)
+9. [Create Album](#create-album)
+10. [Delete Album](#delete-album)
+11. [Get Album](#get-album)
+12. [Associate File](#associate-file)
+13. [Disassociate File](#disassociate-file)
+14. [Share Album](#share-album)
+15. [Revoke Album](#revoke-album)
+16. [Get Restrictions](#get-restrictions)
+17. [Clear Restrictions](#clear-restrictions)
+18. [Get File Stats](#get-file-stats)
 
 The package is namespaced to `waifuvault`, so to import it, simply:
 
@@ -241,6 +249,154 @@ print(bucket.token)
 print(bucket.files)  # Array of file objects
 ```
 
+### Create Album<a id="create-album"></a>
+Albums are shareable collections of files that exist within a bucket.
+
+To create an album, you use the `create_album` function and supply a bucket token and name.
+
+The function takes the following parameters:
+
+| Option         | Type      | Description                         | Required | Extra info        |
+|----------------|-----------|-------------------------------------|----------|-------------------|
+| `bucket_token` | `string`  | The token of the bucket             | true     |                   |
+| `name`         | `string`  | The name of the album to be created | true     |                   |
+
+This will respond with an album object containing the name and token of the album.
+
+```python
+import waifuvault
+album = waifuvault.create_album("some-bucket-token", "album-name")
+print(album.token)
+print(album.name)
+print(album.files)  # Array of file objects
+```
+
+### Delete Album<a id="delete-album"></a>
+To delete an album, you use the `delete_album` function and supply the album token and a boolean indication of whether
+or not the files contained in the album should be deleted or not.  If you chose false, the files will be returned to the
+bucket.
+
+The function takes the following parameters:
+
+| Option         | Type     | Description                         | Required | Extra info        |
+|----------------|----------|-------------------------------------|----------|-------------------|
+| `album_token`  | `string` | The private token of the album      | true     |                   |
+| `delete_files` | `bool`   | Whether the files should be deleted | true     |                   |
+
+> **NOTE:** If `delete_files` is set to True, the files will be permanently deleted 
+
+This will respond with a boolean indicating success.
+
+```python
+import waifuvault
+resp = waifuvault.delete_album("some-album-token", False)
+print(resp)
+```
+
+### Get Album<a id="get-album"></a>
+To get the contents of an album, you use the `get_album` function and supply the album token.  The token can be either the private token
+or the public token.
+
+The function takes the following parameters:
+
+| Option   | Type     | Description            | Required | Extra info                     |
+|----------|----------|------------------------|----------|--------------------------------|
+| `token`  | `string` | The token of the album | true     | Can be private or public token |
+
+This will respond with the album object containing the album information and files contained within the album.
+
+```python
+import waifuvault
+album = waifuvault.get_album("some-album-token")
+print(album.token)
+print(album.bucket_token)
+print(album.public_token)
+print(album.name)
+print(album.files)  # Array of file objects
+```
+
+### Associate File<a id="associate-file"></a>
+To add files to an album, you use the `associate_file` function and supply the private album token and 
+a list of file tokens.
+
+The function takes the following parameters:
+
+| Option  | Type           | Description                         | Required | Extra info |
+|---------|----------------|-------------------------------------|----------|------------|
+| `token` | `string`       | The private token of the album      | true     |            |
+| `files` | `list[string]` | List of file tokens to add to album | true     |            |
+
+This will respond with the new album object containing the added files.
+
+```python
+import waifuvault
+album = waifuvault.associate_file("some-album-token", ["file-token-1","file-token-2"])
+print(album.token)
+print(album.name)
+print(album.files)  # Array of file objects
+```
+
+### Disassociate File<a id="disassociate-file"></a>
+To remove files from an album, you use the `disassociate_file` function and supply the private album token and
+a list of file tokens.
+
+The function takes the following parameters:
+
+| Option  | Type           | Description                         | Required | Extra info |
+|---------|----------------|-------------------------------------|----------|------------|
+| `token` | `string`       | The private token of the album      | true     |            |
+| `files` | `list[string]` | List of file tokens to add to album | true     |            |
+
+This will respond with the new album object with the files removed.
+
+```python
+import waifuvault
+album = waifuvault.disassociate_file("some-album-token", ["file-token-1","file-token-2"])
+print(album.token)
+print(album.name)
+print(album.files)  # Array of file objects
+```
+
+### Share Album<a id="share-album"></a>
+To share an album, so it contents can be accessed from a public URL, you use the `share_album` function and
+supply the private token.
+
+The function takes the following parameters:
+
+| Option  | Type           | Description                         | Required | Extra info |
+|---------|----------------|-------------------------------------|----------|------------|
+| `token` | `string`       | The private token of the album      | true     |            |
+
+This will respond with the public URL with which the album can be found.
+
+```python
+import waifuvault
+url = waifuvault.share_album("some-album-token")
+print(url)
+```
+
+> **NOTE:** The public album token can now be found in the `get_album` results
+
+### Revoke Album<a id="revoke-album"></a>
+To revoke the sharing of an album, so it will no longer be accessible publicly, you use the `revoke_album` function
+and supply the private token.
+
+The function takes the following parameters:
+
+| Option  | Type           | Description                         | Required | Extra info |
+|---------|----------------|-------------------------------------|----------|------------|
+| `token` | `string`       | The private token of the album      | true     |            |
+
+This will respond with a boolean True if the album was revoked.
+
+```python
+import waifuvault
+resp = waifuvault.revoke_album("some-album-token")
+print(resp)
+```
+
+> **NOTE:** Once revoked, the URL for sharing is destroyed.  If the album is later shared again, the URL issued will be different.
+
 ### Get Restrictions<a id="get-restrictions"></a>
 
 To get the list of restrictions applied to the server, you use the `get_restrictions` functions.
@@ -265,4 +421,18 @@ This will remove the cached restrictions and a fresh copy will be downloaded at 
 ```python
 import waifuvault
 waifuvault.clear_restrictions()
+```
+
+### Get File Stats<a id="get-file-stats"></a>
+
+To get general file stats for the server, you use the `get_file_stats` function.
+
+This takes no parameters and returns the number of files and the size of files on the server.
+
+```python
+import waifuvault
+stats = waifuvault.get_file_stats()
+
+print(stats.record_count)
+print(stats.record_size)
 ```
