@@ -452,6 +452,18 @@ def test_disassociate_file(mocker):
     assert (album.name == "test-name"), "Disassociate File did not return album name"
 
 
+def test_download_album(mocker):
+    # Given
+    mock_download_album = mocker.patch('requests.post',return_value = response_mock(True,'', bytes("someval","utf8")))
+
+    # When
+    album_down = waifuvault.download_album("test-album")
+
+    # Then
+    mock_download_album.assert_called_once_with('https://waifuvault.moe/rest/album/download/test-album', json={"[]"})
+    assert (isinstance(album_down, io.BytesIO)), "Download album did not return a buffer"
+
+
 def test_get_restrictions(mocker):
     # Given
     mock_get = mocker.patch('requests.get', return_value=restrictions_response)
