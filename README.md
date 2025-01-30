@@ -32,9 +32,10 @@ This API contains 18 interactions:
 13. [Disassociate File](#disassociate-file)
 14. [Share Album](#share-album)
 15. [Revoke Album](#revoke-album)
-16. [Get Restrictions](#get-restrictions)
-17. [Clear Restrictions](#clear-restrictions)
-18. [Get File Stats](#get-file-stats)
+16. [Download Album](#download-album)
+17. [Get Restrictions](#get-restrictions)
+18. [Clear Restrictions](#clear-restrictions)
+19. [Get File Stats](#get-file-stats)
 
 The package is namespaced to `waifuvault`, so to import it, simply:
 
@@ -396,6 +397,25 @@ print(resp)
 ```
 
 > **NOTE:** Once revoked, the URL for sharing is destroyed.  If the album is later shared again, the URL issued will be different.
+
+### Download Album<a id="download-album"></a>
+To download the contents of an album as a zip file, you use the `download_album` function and
+supply a private or public token for the album.
+
+The zip file will be returned as a buffer.
+
+The function takes the following parameters:
+
+| Option  | Type           | Description                              | Required | Extra info |
+|---------|----------------|------------------------------------------|----------|------------|
+| `token` | `string`       | The private or public token of the album | true     |            |
+
+
+```python
+import waifuvault
+album_zip = waifuvault.download_album("some-album-token")
+print(album_zip.__sizeof__())
+```
 
 ### Get Restrictions<a id="get-restrictions"></a>
 

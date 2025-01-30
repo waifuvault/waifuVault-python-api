@@ -126,6 +126,14 @@ def revoke_album(token: str):
     return dict_obj.get("success")
 
 
+# Download Album
+def download_album(token: str):
+    url = f"{__base_url__}/album/download/{token}"
+    response = requests.post(url, json=[])
+    __check_error(response, True)
+    return BytesIO(response.content)
+
+
 # Files Section
 # Upload File
 def upload_file(file_obj: FileUpload):
