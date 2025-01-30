@@ -460,7 +460,7 @@ def test_download_album(mocker):
     album_down = waifuvault.download_album("test-album")
 
     # Then
-    mock_download_album.assert_called_once_with('https://waifuvault.moe/rest/album/download/test-album', json={"[]"})
+    mock_download_album.assert_called_once_with('https://waifuvault.moe/rest/album/download/test-album', json=[])
     assert (isinstance(album_down, io.BytesIO)), "Download album did not return a buffer"
 
 
