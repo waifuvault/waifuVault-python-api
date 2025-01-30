@@ -129,7 +129,7 @@ def revoke_album(token: str):
 # Download Album
 def download_album(token: str):
     url = f"{__base_url__}/album/download/{token}"
-    response = requests.post(url, json={"[]"})
+    response = requests.post(url, json=[])
     __check_error(response, True)
     return BytesIO(response.content)
 
