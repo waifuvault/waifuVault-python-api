@@ -37,6 +37,11 @@ def get_file_stats():
     return FilesInfo(dict_obj=json.loads(response.text))
 
 
+# Set Alt BaseURL
+def set_alt_baseurl(url: str):
+    __base_url__ = url
+
+
 # Buckets Section
 # Create Bucket
 def create_bucket():
