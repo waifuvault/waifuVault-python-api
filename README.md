@@ -28,8 +28,8 @@ This API contains 19 interactions:
 9. [Create Album](#create-album)
 10. [Delete Album](#delete-album)
 11. [Get Album](#get-album)
-12. [Associate File](#associate-file)
-13. [Disassociate File](#disassociate-file)
+12. [Associate Files](#associate-files)
+13. [Disassociate Files](#disassociate-files)
 14. [Share Album](#share-album)
 15. [Revoke Album](#revoke-album)
 16. [Download Album](#download-album)
@@ -315,8 +315,8 @@ print(album.name)
 print(album.files)  # Array of file objects
 ```
 
-### Associate File<a id="associate-file"></a>
-To add files to an album, you use the `associate_file` function and supply the private album token and 
+### Associate Files<a id="associate-files"></a>
+To add files to an album, you use the `associate_files` function and supply the private album token and 
 a list of file tokens.
 
 The function takes the following parameters:
@@ -330,28 +330,28 @@ This will respond with the new album object containing the added files.
 
 ```python
 import waifuvault
-album = waifuvault.associate_file("some-album-token", ["file-token-1","file-token-2"])
+album = waifuvault.associate_files("some-album-token", ["file-token-1","file-token-2"])
 print(album.token)
 print(album.name)
 print(album.files)  # Array of file objects
 ```
 
-### Disassociate File<a id="disassociate-file"></a>
-To remove files from an album, you use the `disassociate_file` function and supply the private album token and
+### Disassociate Files<a id="disassociate-files"></a>
+To remove files from an album, you use the `disassociate_files` function and supply the private album token and
 a list of file tokens.
 
 The function takes the following parameters:
 
-| Option  | Type           | Description                         | Required | Extra info |
-|---------|----------------|-------------------------------------|----------|------------|
-| `token` | `string`       | The private token of the album      | true     |            |
-| `files` | `list[string]` | List of file tokens to add to album | true     |            |
+| Option  | Type           | Description                              | Required | Extra info |
+|---------|----------------|------------------------------------------|----------|------------|
+| `token` | `string`       | The private token of the album           | true     |            |
+| `files` | `list[string]` | List of file tokens to remove from album | true     |            |
 
 This will respond with the new album object with the files removed.
 
 ```python
 import waifuvault
-album = waifuvault.disassociate_file("some-album-token", ["file-token-1","file-token-2"])
+album = waifuvault.disassociate_files("some-album-token", ["file-token-1","file-token-2"])
 print(album.token)
 print(album.name)
 print(album.files)  # Array of file objects
@@ -398,17 +398,49 @@ print(resp)
 > **NOTE:** Once revoked, the URL for sharing is destroyed.  If the album is later shared again, the URL issued will be different.
 
 ### Download Album<a id="download-album"></a>
-To download the contents of an album as a zip file, you use the `download_album` function and
-supply a private or public token for the album.
+To download the contents of an album as a zip file, you use the `download_album` function and supply a private or public
+token for the album.
+
+You can also supply the file ids as an array to selectively download files. these ids can be found as part of the
+get info response.
 
 The zip file will be returned as a buffer.
 
 The function takes the following parameters:
 
-| Option  | Type           | Description                              | Required | Extra info |
-|---------|----------------|------------------------------------------|----------|------------|
-| `token` | `string`       | The private or public token of the album | true     |            |
+| Option       | Type       | Description                              | Required | Extra info                                               |
+|--------------|------------|------------------------------------------|----------|----------------------------------------------------------|
+| `albumToken` | `string`   | The private or public token of the album | true     |                                                          |
+| `files`      | `number[]` | The ids of the files to download         | false    | the ids can be found as part of the `WaifuFile` response |
 
+download all files:
+
+```python
+import waifuvault
+album_zip = waifuvault.download_album("some-album-token")
+print(album_zip.__sizeof__())
+```
+
+selective files:
+
+```python
+import waifuvault
+album_zip = waifuvault.download_album("some-album-token", [1])
+print(album_zip.__sizeof__())
+```
+
+get a file id from token:
+
+```python
+import waifuvault
+
+# get file info
+fileInfo = waifuvault.file_info("some-file-token", False)
+
+# download the one file as zip
+album_zip = waifuvault.download_album(fileInfo.album_token, [fileInfo.file_id])
+print(album_zip.__sizeof__())
+```
 
 ```python
 import waifuvault
