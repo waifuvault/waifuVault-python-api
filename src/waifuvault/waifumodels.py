@@ -57,9 +57,10 @@ class FileOptions:
 
 
 class FileResponse:
-    def __init__(self, token: str = None, url: str = None, retention_period: str | int = None, bucket: str = None, views: int = None, album: str = None,  options: FileOptions = None, dict_obj: {} = None):
+    def __init__(self, token: str = None, file_id: int = None, url: str = None, retention_period: str | int = None, bucket: str = None, views: int = None, album: str = None,  options: FileOptions = None, dict_obj: {} = None):
         if dict_obj is not None:
             self.token = dict_obj.get("token")
+            self.file_id = dict_obj.get("id")
             self.url = dict_obj.get("url")
             self.retentionPeriod = dict_obj.get("retentionPeriod")
             self.bucket = dict_obj.get("bucket")
@@ -68,6 +69,7 @@ class FileResponse:
             self.options = FileOptions(dict_obj=dict_obj["options"])
         else:
             self.token = token
+            self.file_id = file_id
             self.url = url
             self.retentionPeriod = retention_period
             self.bucket = bucket

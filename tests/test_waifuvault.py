@@ -421,12 +421,12 @@ def test_revoke_album(mocker):
     assert (revoke_album is True), "Revoke Album did not return true"
 
 
-def test_associate_file(mocker):
+def test_associate_files(mocker):
     # Given
     mock_associate = mocker.patch('requests.post', return_value=album_response)
 
     # When
-    album = waifuvault.associate_file("test-album", ["file1","file2"])
+    album = waifuvault.associate_files("test-album", ["file1","file2"])
 
     # Then
     mock_associate.assert_called_once_with('https://waifuvault.moe/rest/album/test-album/associate', json={'fileTokens': ['file1','file2']})
@@ -437,12 +437,12 @@ def test_associate_file(mocker):
     assert (album.files[0].token == "test-file"), "Associate File did not return file token"
 
 
-def test_disassociate_file(mocker):
+def test_disassociate_files(mocker):
     # Given
     mock_disassociate = mocker.patch('requests.post', return_value=album_response)
 
     # When
-    album = waifuvault.disassociate_file("test-album", ["file1","file2"])
+    album = waifuvault.disassociate_files("test-album", ["file1","file2"])
 
     # Then
     mock_disassociate.assert_called_once_with('https://waifuvault.moe/rest/album/test-album/disassociate', json={'fileTokens': ['file1','file2']})
@@ -461,6 +461,18 @@ def test_download_album(mocker):
 
     # Then
     mock_download_album.assert_called_once_with('https://waifuvault.moe/rest/album/download/test-album', json=[])
+    assert (isinstance(album_down, io.BytesIO)), "Download album did not return a buffer"
+
+
+def test_download_album_selective(mocker):
+    # Given
+    mock_download_album = mocker.patch('requests.post',return_value = response_mock(True,'', bytes("someval","utf8")))
+
+    # When
+    album_down = waifuvault.download_album("test-album", [1])
+
+    # Then
+    mock_download_album.assert_called_once_with('https://waifuvault.moe/rest/album/download/test-album', json=[1])
     assert (isinstance(album_down, io.BytesIO)), "Download album did not return a buffer"
 
 

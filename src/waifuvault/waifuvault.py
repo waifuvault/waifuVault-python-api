@@ -96,7 +96,7 @@ def get_album(token: str):
 
 
 # Associate File
-def associate_file(token: str, file_tokens: list[str]):
+def associate_files(token: str, file_tokens: list[str]):
     url = f"{__base_url__}/album/{token}/associate"
     data = {"fileTokens": file_tokens}
     response = requests.post(url, json=data)
@@ -105,7 +105,7 @@ def associate_file(token: str, file_tokens: list[str]):
 
 
 # Disassociate File
-def disassociate_file(token: str, file_tokens: list[str]):
+def disassociate_files(token: str, file_tokens: list[str]):
     url = f"{__base_url__}/album/{token}/disassociate"
     data = {"fileTokens": file_tokens}
     response = requests.post(url, json=data)
@@ -132,9 +132,11 @@ def revoke_album(token: str):
 
 
 # Download Album
-def download_album(token: str):
+def download_album(token: str, files: list[int] = None):
     url = f"{__base_url__}/album/download/{token}"
-    response = requests.post(url, json=[])
+    if files is None:
+        files = []
+    response = requests.post(url, json=files)
     __check_error(response, True)
     return BytesIO(response.content)
 
