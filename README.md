@@ -184,7 +184,7 @@ Obtain an encrypted file
 
 ```python
 import waifuvault
-upload_enc_res = FileResponse(your_token,None,False,None)
+upload_enc_res = waifuvault.FileResponse(your_token,None,False,None)
 file_enc_down = waifuvault.get_file(upload_enc_res,"your_password")
 print(file_enc_down.__sizeof__())
 ```
@@ -193,7 +193,7 @@ Obtain a file from URL
 
 ```python
 import waifuvault
-upload_enc_res = FileResponse(None,your_url,False,None)
+upload_enc_res = waifuvault.FileResponse(None,your_url,False,None)
 file_enc_down = waifuvault.get_file(upload_enc_res,"your_password")
 print(file_enc_down.__sizeof__())
 ```
@@ -439,12 +439,6 @@ fileInfo = waifuvault.file_info("some-file-token", False)
 
 # download the one file as zip
 album_zip = waifuvault.download_album(fileInfo.album_token, [fileInfo.file_id])
-print(album_zip.__sizeof__())
-```
-
-```python
-import waifuvault
-album_zip = waifuvault.download_album("some-album-token")
 print(album_zip.__sizeof__())
 ```
 
