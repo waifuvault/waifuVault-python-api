@@ -77,6 +77,20 @@ upload_res = waifuvault.upload_file(upload_file)
 print(f"{upload_res.url}")
 ```
 
+Using a file path asynchronously:
+
+```python
+import waifuvault
+import asyncio
+
+async def upload():
+    upload_file = waifuvault.FileUpload("./files/aCoolFile.png")
+    async with waifuvault.upload_file_async(upload_file) as upload_res:
+        print(f"{upload_res.url}")
+
+asyncio.run(upload())
+```
+
 Using a buffer:
 
 ```python
