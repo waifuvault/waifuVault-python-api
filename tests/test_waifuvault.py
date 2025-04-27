@@ -1,5 +1,8 @@
 import io
 import re
+from unittest.mock import AsyncMock
+
+import aiohttp
 
 import pytest
 import waifuvault
@@ -15,6 +18,10 @@ class response_mock:
 
 
 # Mocked responses
+ok_async_response = AsyncMock()
+ok_async_response.ok = True
+ok_async_response.text = '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "bucket":"test-bucket", "retentionPeriod":100, "options":{"protected": false, "oneTimeDownload": false, "hideFilename": false}}'
+
 ok_response_numeric_long = response_mock(True,
                                     '{"url":"https://waifuvault.moe/f/something", "token":"test-token", "bucket":"test-bucket", "retentionPeriod":28860366525, "options":{"protected": false, "oneTimeDownload": false, "hideFilename": false}}')
 ok_response_numeric = response_mock(True,
@@ -117,6 +124,24 @@ def test_upload_file(mocker):
 
     # When
     upload_res = waifuvault.upload_file(upload_file)
+
+    # Then
+    mock_put.assert_called_once()
+    assert (upload_res.url == "https://waifuvault.moe/f/something"), "URL does not match"
+    assert (upload_res.token == "test-token"), "Token does not match"
+    assert (upload_res.options.protected is False), "Protected does not match"
+    assert (upload_res.retentionPeriod == 100), "Retention does not match"
+
+
+@pytest.mark.asyncio
+async def test_upload_file_async(mocker):
+    # Given
+    mock_put = mocker.patch('aiohttp.ClientSession.put', new_callable = AsyncMock, return_value = ok_async_response)
+    mock_get = mocker.patch('requests.get', return_value=restrictions_response)
+    upload_file = waifuvault.FileUpload("tests/testfile.png", expires="10m")
+
+    # When
+    upload_res = await waifuvault.upload_file_async(upload_file)
 
     # Then
     mock_put.assert_called_once()

@@ -209,9 +209,10 @@ async def upload_file_async(file_obj: FileUpload):
         header_data = {'Content-Type': multipart_data.content_type}
 
     async with aiohttp.ClientSession() as session:
-        async with session.put(url, params=file_obj.build_parameters(), data=multipart_data, headers=header_data) as response:
+        response = await session.put(url, params=file_obj.build_parameters(), data=multipart_data, headers=header_data)
+        async with response:
             await __check_error_async(response, False)
-            text = await response.text()
+            text = response.text
             return FileResponse(dict_obj=json.loads(text))
 
 
@@ -294,8 +295,8 @@ async def __check_error_async(response: ClientResponse, is_download: bool):
         except Exception:
             text = await response.text()
             status = response.status
-            name = "Password is Incorrect" if response.status == 403 and is_download else response.status
-            message = "Password is Incorrect" if response.status == 403 and is_download else response.text
+            name = "Password is Incorrect" if status == 403 and is_download else status
+            message = "Password is Incorrect" if status == 403 and is_download else text
         raise Exception(f"Error {status} ({name}): {message}")
     return
 
