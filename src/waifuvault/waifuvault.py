@@ -1,8 +1,13 @@
 __base_url__ = "https://waifuvault.moe/rest"
+
+from aiohttp import ClientResponse
+
 __restrictions = None
 
 import json
 import os
+import aiohttp
+import asyncio
 from datetime import datetime
 from io import BytesIO
 
@@ -177,6 +182,40 @@ def upload_file(file_obj: FileUpload):
     return FileResponse(dict_obj=json.loads(response.text))
 
 
+# Upload File Async
+async def upload_file_async(file_obj: FileUpload):
+    url = __base_url__
+    __check_restrictions(file_obj)
+    if file_obj.bucket_token:
+        url += f"/{file_obj.bucket_token}"
+    fields = {}
+    if file_obj.password:
+        fields['password'] = file_obj.password
+    if file_obj.is_buffer():
+        fields['file'] = (file_obj.target_name, file_obj.target)
+        multipart_data = MultipartEncoder(
+            fields=fields
+        )
+        header_data = {'Content-Type': multipart_data.content_type}
+    elif file_obj.is_url():
+        fields['url'] = file_obj.target
+        multipart_data = fields
+        header_data = None
+    else:
+        fields['file'] = (os.path.basename(file_obj.target), open(file_obj.target, 'rb'))
+        multipart_data = MultipartEncoder(
+            fields=fields
+        )
+        header_data = {'Content-Type': multipart_data.content_type}
+
+    async with aiohttp.ClientSession() as session:
+        response = await session.put(url, params=file_obj.build_parameters(), data=multipart_data, headers=header_data)
+        async with response:
+            await __check_error_async(response, False)
+            text = response.text
+            return FileResponse(dict_obj=json.loads(text))
+
+
 # Update File
 def file_update(token: str, password: str = None, previous_password: str = None, custom_expiry: str = None, hide_filename:bool = False):
     url = f"{__base_url__}/{token}"
@@ -241,6 +280,23 @@ def __check_error(response: requests.models.Response, is_download: bool):
             status = response.status_code
             name = "Password is Incorrect" if response.status_code == 403 and is_download else response.status_code
             message = "Password is Incorrect" if response.status_code == 403 and is_download else response.text
+        raise Exception(f"Error {status} ({name}): {message}")
+    return
+
+
+# Check Error Async
+async def __check_error_async(response: ClientResponse, is_download: bool):
+    if not response.ok:
+        try:
+            err = await response.json()
+            status = err.get("status", response.status)
+            name = err.get("name", "Unknown Error")
+            message = err.get("message", "Unknown Message")
+        except Exception:
+            text = await response.text()
+            status = response.status
+            name = "Password is Incorrect" if status == 403 and is_download else status
+            message = "Password is Incorrect" if status == 403 and is_download else text
         raise Exception(f"Error {status} ({name}): {message}")
     return
 
