@@ -159,7 +159,7 @@ class Restriction:
                     raise ValueError(f'File MIME type {mime_type} is not allowed for upload')
                 return
             case _:
-                raise NotImplementedError(f'Restriction type {self.type} is not implemented')
+                return
 
 
 class RestrictionResponse:
