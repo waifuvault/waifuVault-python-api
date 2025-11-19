@@ -148,9 +148,10 @@ def download_album(token: str, files: list[int] = None):
 
 # Files Section
 # Upload File
-def upload_file(file_obj: FileUpload):
+def upload_file(file_obj: FileUpload, ignore_client_restrictions: bool = False):
     url = __base_url__
-    __check_restrictions(file_obj)
+    if not ignore_client_restrictions:
+        __check_restrictions(file_obj)
     if file_obj.bucket_token:
         url += f"/{file_obj.bucket_token}"
     fields = {}
@@ -183,9 +184,10 @@ def upload_file(file_obj: FileUpload):
 
 
 # Upload File Async
-async def upload_file_async(file_obj: FileUpload):
+async def upload_file_async(file_obj: FileUpload, ignore_client_restrictions: bool = False):
     url = __base_url__
-    __check_restrictions(file_obj)
+    if not ignore_client_restrictions:
+        __check_restrictions(file_obj)
     if file_obj.bucket_token:
         url += f"/{file_obj.bucket_token}"
     fields = {}

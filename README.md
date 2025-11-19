@@ -59,6 +59,8 @@ To Upload a file, use the `upload_file` function. This function takes the follow
 
 > **NOTE:** Server restrictions are checked by the SDK client side *before* upload, and will throw a ValueError exception if they are violated
 
+As an optional parameter, `ignore_client_restrictions` can be set to override client side restrictions checking.
+
 Using a URL:
 
 ```python
@@ -74,6 +76,15 @@ Using a file path:
 import waifuvault
 upload_file = waifuvault.FileUpload("./files/aCoolFile.png")
 upload_res = waifuvault.upload_file(upload_file)
+print(f"{upload_res.url}")
+```
+
+Using a file path, ignoring client side restrictions:
+
+```python
+import waifuvault
+upload_file = waifuvault.FileUpload("./files/aCoolFile.png")
+upload_res = waifuvault.upload_file(upload_file, True)
 print(f"{upload_res.url}")
 ```
 
