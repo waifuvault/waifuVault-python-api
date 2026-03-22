@@ -12,6 +12,7 @@ jobs:
 
   build_and_deploy:
     runs-on: ubuntu-latest
+    environment: package
     steps:
       - name: prep action
         uses: actions/checkout@v4
