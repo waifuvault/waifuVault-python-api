@@ -163,10 +163,6 @@ def upload_file(file_obj: FileUpload, ignore_client_restrictions: bool = False):
             fields=fields
         )
         header_data = {'Content-Type': multipart_data.content_type}
-    elif file_obj.is_url():
-        fields['url'] = file_obj.target
-        multipart_data = fields
-        header_data = None
     else:
         fields['file'] = (os.path.basename(file_obj.target), open(file_obj.target, 'rb'))
         multipart_data = MultipartEncoder(
@@ -199,10 +195,6 @@ async def upload_file_async(file_obj: FileUpload, ignore_client_restrictions: bo
             fields=fields
         )
         header_data = {'Content-Type': multipart_data.content_type}
-    elif file_obj.is_url():
-        fields['url'] = file_obj.target
-        multipart_data = fields
-        header_data = None
     else:
         fields['file'] = (os.path.basename(file_obj.target), open(file_obj.target, 'rb'))
         multipart_data = MultipartEncoder(

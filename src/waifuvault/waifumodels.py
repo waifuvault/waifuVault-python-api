@@ -15,11 +15,6 @@ class FileUpload:
         self.expires = expires
         self.password = password
 
-    def is_url(self):
-        if isinstance(self.target, io.BytesIO):
-            return False
-        return self.target.lower().startswith("http://") or self.target.lower().startswith("https://")
-
     def is_buffer(self):
         return isinstance(self.target, io.BytesIO)
 
@@ -140,8 +135,6 @@ class Restriction:
             self.value = value
 
     def passes(self, file: FileUpload):
-        if file.is_url():
-            return
         match self.type:
             case "MAX_FILE_SIZE":
                 if file.is_buffer():

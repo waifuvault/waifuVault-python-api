@@ -7,6 +7,8 @@
 This contains the official API bindings for uploading, deleting and obtaining files
 with [waifuvault.moe](https://waifuvault.moe/). Contains a full up to date API for interacting with the service
 
+**NOTE WELL:** As of version 1.5.9 of this API, support for URL based upload has been removed
+
 ## Installation
 
 ```sh
@@ -49,7 +51,7 @@ To Upload a file, use the `upload_file` function. This function takes the follow
 
 | Option            | Type               | Description                                                     | Required       | Extra info                       |
 |-------------------|--------------------|-----------------------------------------------------------------|----------------|----------------------------------|
-| `target`          | `string or buffer` | The target to upload can be a buffer, URL or filename           | true           | URL or file path                 |
+| `target`          | `string or buffer` | The target to upload can be a buffer or filename                | true           | Buffer or file path              |
 | `target_name`     | `string`           | The filename of the target if it is a buffer                    | true if buffer | Filename with extension          |
 | `bucket_token`    | `string`           | Token for a bucket to upload the file into                      | false          | Create bucket gives token        |
 | `expires`         | `string`           | A string containing a number and a unit (1d = 1day)             | false          | Valid units are `m`, `h` and `d` |
@@ -57,18 +59,11 @@ To Upload a file, use the `upload_file` function. This function takes the follow
 | `password`        | `string`           | If set, then the uploaded file will be encrypted                | false          |                                  |
 | `oneTimeDownload` | `boolean`          | if supplied, the file will be deleted as soon as it is accessed | false          |                                  |
 
+> **NOTE WELL:** Support for legacy URL uploads feature has been removed
+
 > **NOTE:** Server restrictions are checked by the SDK client side *before* upload, and will throw a ValueError exception if they are violated
 
 As an optional parameter, `ignore_client_restrictions` can be set to override client side restrictions checking.
-
-Using a URL:
-
-```python
-import waifuvault
-upload_file = waifuvault.FileUpload("https://waifuvault.moe/assets/custom/images/08.png")
-upload_res = waifuvault.upload_file(upload_file)
-print(f"{upload_res.url}")
-```
 
 Using a file path:
 
