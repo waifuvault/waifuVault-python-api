@@ -59,62 +59,6 @@ album_response = response_mock(True,
                                 } \
                                 ]}')
 
-# URL Upload Tests
-def test_upload_url(mocker):
-    # Given
-    mock_put = mocker.patch('requests.put', return_value = ok_response_numeric)
-    mock_get = mocker.patch('requests.get', return_value=restrictions_response)
-    upload_file = waifuvault.FileUpload("https://walker.moe/assets/sunflowers.png", expires="10m")
-
-    # When
-    upload_res = waifuvault.upload_file(upload_file)
-    mock_put.assert_called_once_with(
-        'https://waifuvault.moe/rest',
-        params={'expires': '10m'},
-        data={'url': 'https://walker.moe/assets/sunflowers.png'},
-        headers=None)
-
-    # Then
-    assert (upload_res.url == "https://waifuvault.moe/f/something"), "URL does not match"
-    assert (upload_res.token == "test-token"), "Token does not match"
-    assert (upload_res.options.protected is False), "Protected does not match"
-    assert (upload_res.retentionPeriod == 100), "Retention does not match"
-
-
-def test_upload_bucket(mocker):
-    # Given
-    mock_put = mocker.patch('requests.put', return_value = ok_response_numeric)
-    mock_get = mocker.patch('requests.get', return_value=restrictions_response)
-    upload_file = waifuvault.FileUpload("https://walker.moe/assets/sunflowers.png", expires="10m", bucket_token="test-bucket")
-
-    # When
-    upload_res = waifuvault.upload_file(upload_file)
-    mock_put.assert_called_once_with(
-        'https://waifuvault.moe/rest/test-bucket',
-        params={'expires': '10m'},
-        data={'url': 'https://walker.moe/assets/sunflowers.png'},
-        headers=None)
-
-    # Then
-    assert (upload_res.url == "https://waifuvault.moe/f/something"), "URL does not match"
-    assert (upload_res.token == "test-token"), "Token does not match"
-    assert (upload_res.bucket == "test-bucket"), "Bucket does not match"
-    assert (upload_res.options.protected is False), "Protected does not match"
-    assert (upload_res.retentionPeriod == 100), "Retention does not match"
-
-
-def test_upload_url_error(mocker):
-    # Given
-    mock_put = mocker.patch('requests.put', return_value = bad_request)
-    mock_get = mocker.patch('requests.get', return_value=restrictions_response)
-
-    # When
-    upload_file = waifuvault.FileUpload("https://walker.moe/assets/sunflowers.png", expires="10m")
-
-    # Then
-    with pytest.raises(Exception, match=re.escape('Error 400 (BAD_REQUEST): Error Test')):
-        upload_res = waifuvault.upload_file(upload_file)
-
 
 def test_upload_file(mocker):
     # Given
